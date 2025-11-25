@@ -2,22 +2,25 @@ import 'package:catalyst/core/utils/service_locator.dart';
 import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart';
 import 'package:catalyst/features/auth/presentation/cubit/login%20cubit/login_cubit.dart';
 import 'package:catalyst/features/auth/presentation/cubit/register%20cubit/register_cubit.dart';
-import 'package:catalyst/features/auth/presentation/views/forget%20password/forget_password.dart';
-import 'package:catalyst/features/auth/presentation/views/forget%20password/reset_password.dart';
-import 'package:catalyst/features/auth/presentation/views/forget%20password/verification_code.dart';
+import 'package:catalyst/features/auth/presentation/views/forget_password_view.dart';
+import 'package:catalyst/features/auth/presentation/views/reset_password_view.dart';
+import 'package:catalyst/features/auth/presentation/views/verification_code_view.dart';
 import 'package:catalyst/features/auth/presentation/views/login_view.dart';
 import 'package:catalyst/features/auth/presentation/views/register_view.dart';
 import 'package:catalyst/features/auto%20grade/presentation/views/auto_grade_view.dart';
 import 'package:catalyst/features/home/presentation/views/home_view.dart';
+import 'package:catalyst/features/my%20classes/presentation/cubits/create%20class%20cubit/create_class_cubit.dart';
+import 'package:catalyst/features/my%20classes/data/repos/my_classes_repo_impl.dart';
 import 'package:catalyst/features/my%20classes/presentation/views/students_in_class.dart';
 import 'package:catalyst/features/roots.dart';
-import 'package:catalyst/features/schedule/presentation/views/schedule_view.dart';
 import 'package:catalyst/features/splash/splash_view.dart';
+import 'package:catalyst/features/student%20requests/data/repos/student_requests_repo_impl.dart';
+import 'package:catalyst/features/student%20requests/presentation/cubits/get%20students%20requests%20cubit/get_students_requests_cubit.dart';
 import 'package:catalyst/features/student%20requests/presentation/views/student_profile.dart';
 import 'package:catalyst/features/student%20requests/presentation/views/student_requests.dart';
-import 'package:catalyst/features/students/presentation/students/create_exam_page.dart';
+import 'package:catalyst/features/exam/presentation/views/create_exam_page.dart';
 import 'package:catalyst/features/my classes/presentation/views/my_classes_view.dart';
-import 'package:catalyst/features/students/presentation/students/exam_questions.dart';
+import 'package:catalyst/features/exam/presentation/views/exam_questions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,8 +48,7 @@ class Routs {
       GoRoute(
         path: login,
         builder: (context, state) => BlocProvider(
-          create: (context) =>
-              LoginCubitCubit(getIt.get<AuthRepoImplementation>()),
+          create: (context) => LoginCubit(getIt.get<AuthRepoImplementation>()),
           child: LoginView(),
         ),
       ),
@@ -72,10 +74,7 @@ class Routs {
       ),
       GoRoute(path: root, builder: (context, state) => const Root()),
       GoRoute(path: home, builder: (context, state) => const HomeView()),
-      GoRoute(
-        path: schedule,
-        builder: (context, state) => const ScheduleView(),
-      ),
+
       GoRoute(
         path: students,
         builder: (context, state) => const CreateExamPage(),
@@ -90,7 +89,11 @@ class Routs {
       ),
       GoRoute(
         path: studentRequests,
-        builder: (context, state) => const StudentRequestsView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) =>
+              GetStudentsRequestsCubit(getIt.get<StudentRequestsRepoImpl>()),
+          child: const StudentRequestsView(),
+        ),
       ),
       GoRoute(
         path: studentProfile,
@@ -99,7 +102,10 @@ class Routs {
       ),
       GoRoute(
         path: myClasses,
-        builder: (context, state) => const MyClassesView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => CreateClassCubit(getIt.get<MyClassesRepoImpl>()),
+          child: const MyClassesView(),
+        ),
       ),
       GoRoute(
         path: studentsInClass,

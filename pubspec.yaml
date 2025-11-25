@@ -38,6 +38,9 @@ dependencies:
   get_it: ^8.2.0
   liquid_glass_navbar: ^1.0.0
   oc_liquid_glass: ^0.2.1
+  shared_preferences: ^2.5.3
+  carousel_slider: ^5.1.1
+  flutter_dotenv: ^6.0.0
 
   flutter:
     sdk: flutter
@@ -72,6 +75,8 @@ flutter:
   assets:
     - assets/auth/
     - assets/home/
+    - .env
+    - assets/drawer/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

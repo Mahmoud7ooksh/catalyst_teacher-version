@@ -1,42 +1,36 @@
 import 'package:catalyst/core/utils/app_colors.dart';
+import 'package:catalyst/core/utils/assets.dart';
+import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/utils/vlidation.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
+import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/auth/presentation/cubit/login%20cubit/login_cubit.dart';
-import 'package:catalyst/features/auth/presentation/widgets/bubble_icon.dart';
+import 'package:catalyst/features/auth/presentation/widgets/auth_background.dart';
 import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
+import 'package:catalyst/features/auth/presentation/widgets/custom_textformfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_textformfield.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:catalyst/core/utils/routs.dart';
-import 'package:catalyst/core/widgets/glass_books.dart';
 
-class LoginView extends StatefulWidget {
+class LoginView extends StatelessWidget {
   const LoginView({super.key});
-
-  @override
-  State<LoginView> createState() => _LoginViewState();
-}
-
-class _LoginViewState extends State<LoginView> {
-  final _formKey = GlobalKey<FormState>();
-  AutovalidateMode autoValidate = AutovalidateMode.disabled;
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      child: BlocConsumer<LoginCubitCubit, LoginCubitState>(
+      child: BlocConsumer<LoginCubit, LoginCubitState>(
         listener: (context, state) {
           if (state is LoginCubitError) {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
-          } else if (state is LoginCubitSuccess) {
+          }
+          if (state is LoginCubitSuccess) {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
-            GoRouter.of(context).go(Routs.root);
           }
         },
         builder: (context, state) {
@@ -44,179 +38,85 @@ class _LoginViewState extends State<LoginView> {
             children: [
               Opacity(
                 opacity: state is LoginCubitLoading ? 0.5 : 1,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 26),
-                    child: Form(
-                      autovalidateMode: autoValidate,
-                      key: _formKey,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            //logo
-                            const SizedBox(height: 70),
-                            GlassBox(
-                              width: double.infinity,
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Catalyst",
-                                    style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Teacher Version",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white.withOpacity(0.6),
-                                      letterSpacing: 1,
-                                    ),
-                                  ),
+                child: AuthBackground(
+                  child: Column(
+                    // ===== textfields =====
+                    children: [
+                      const SizedBox(height: 10),
+                      SvgPicture.asset(Assets.catalyst, fit: BoxFit.cover),
+                      const SizedBox(height: 60),
+                      CustomTextformfield(
+                        controller: context.read<LoginCubit>().emailController,
+                        label: 'Email',
+                        icon: CupertinoIcons.mail,
+                        validator: Validation.validateEmail,
+                      ),
+                      const SizedBox(height: 20),
+                      CustomTextformfield(
+                        controller: context
+                            .read<LoginCubit>()
+                            .passwordController,
+                        label: 'Password',
+                        icon: CupertinoIcons.lock,
+                        validator: Validation.validatePassword,
+                        isPassword: true,
+                      ),
 
-                                  //SvgPicture.asset(Assets.catalyst),
-                                  const SizedBox(height: 15),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-
-                            //Text Fields
-                            GlassBox(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Welcome Back",
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white.withValues(
-                                        alpha: 0.9,
-                                      ),
-                                      letterSpacing: 1.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 15),
-                                  CustomTextformfield(
-                                    controller: context
-                                        .read<LoginCubitCubit>()
-                                        .emailController,
-                                    label: 'Email',
-                                    icon: CupertinoIcons.mail,
-                                    validator: Validation.validateEmail,
-                                  ),
-                                  const SizedBox(height: 15),
-                                  CustomTextformfield(
-                                    controller: context
-                                        .read<LoginCubitCubit>()
-                                        .passwordController,
-                                    label: 'Password',
-                                    icon: CupertinoIcons.lock,
-                                    isPassword: true,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'Password is required';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-
-                                  //Forgot Password
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: TextButton(
-                                      onPressed: () {
-                                        GoRouter.of(
-                                          context,
-                                        ).push(Routs.forgetPassword);
-                                      },
-                                      child: Text(
-                                        'Forgot Password? ',
-                                        style: TextStyle(
-                                          color: AppColors.likeWhite,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 20),
-
-                                  //Login Button
-                                  CustomButton(
-                                    text: 'LOGIN',
-                                    onPressed: () {
-                                      if (_formKey.currentState!.validate()) {
-                                        context.read<LoginCubitCubit>().login();
-                                      } else {
-                                        setState(() {
-                                          autoValidate = AutovalidateMode
-                                              .onUserInteraction;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-
-                            GlassBox(
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'don’t have an account?',
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.7,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      TextButton(
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          minimumSize: const Size(0, 0),
-                                        ),
-                                        onPressed: () {
-                                          GoRouter.of(
-                                            context,
-                                          ).push(Routs.register);
-                                        },
-                                        child: const Text(
-                                          'Sign Up',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 15),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      BubbleIcon(
-                                        icon: Icons.school,
-                                        active: true,
-                                      ),
-                                      SizedBox(width: 40),
-                                      BubbleIcon(
-                                        icon: Icons.person,
-                                        active: false,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      // ===== forget password =====
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            GoRouter.of(context).push(Routs.forgetPassword);
+                          },
+                          child: CustomText(
+                            text: 'Forgot Password?',
+                            color: AppColors.color2,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 55),
+
+                      // ===== login button =====
+                      CustomButton(
+                        text: 'LOGIN',
+                        onPressed: () {
+                          context.read<LoginCubit>().login();
+                          GoRouter.of(context).go(Routs.root);
+                        },
+                      ),
+                      const SizedBox(height: 15),
+
+                      // ===== don't have an account =====
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const CustomText(
+                            text: 'Don\'t have an account?',
+                            color: AppColors.text,
+                            fontSize: 14,
+                          ),
+                          const SizedBox(width: 5),
+                          TextButton(
+                            onPressed: () {
+                              GoRouter.of(context).push(Routs.register);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.color2,
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: const CustomText(
+                              text: 'SIGN UP',
+                              color: AppColors.color2,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),

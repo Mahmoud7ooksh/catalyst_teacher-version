@@ -1,16 +1,13 @@
-import 'package:catalyst/core/api/constant.dart';
+import 'package:catalyst/core/databases/api/constant.dart';
 
 class VerifyCodeRequest {
   final String email;
   final String code;
 
-  VerifyCodeRequest({
-    required this.email,
-    required this.code,
-  });
+  VerifyCodeRequest({required this.email, required this.code});
 
   Map<String, dynamic> toJson() => {
-        Body.email: email,
-        Body.code: code,
-      };
+    BodyRequest.email: email,
+    BodyRequest.code: code,
+  };
 }

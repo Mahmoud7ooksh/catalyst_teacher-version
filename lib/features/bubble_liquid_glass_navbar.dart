@@ -131,8 +131,8 @@ class _LiquidBottomNavBarState extends State<LiquidBottomNavBar> {
                 child: Container(
                   height: widget.height,
                   decoration: BoxDecoration(
-                    color: widget.backgroundColor.withOpacity(
-                      widget.backgroundOpacity,
+                    color: widget.backgroundColor.withValues(
+                      alpha: widget.backgroundOpacity,
                     ),
                     borderRadius: BorderRadius.circular(widget.borderRadius),
                   ),
@@ -160,8 +160,8 @@ class _LiquidBottomNavBarState extends State<LiquidBottomNavBar> {
                             width: widget.bubbleWidth,
                             height: widget.bubbleHeight,
                             decoration: BoxDecoration(
-                              color: widget.bubbleColor.withOpacity(
-                                widget.bubbleOpacity,
+                              color: widget.bubbleColor.withValues(
+                                alpha: widget.bubbleOpacity,
                               ),
                               borderRadius: BorderRadius.circular(
                                 widget.borderRadius,
@@ -170,7 +170,7 @@ class _LiquidBottomNavBarState extends State<LiquidBottomNavBar> {
                                 color:
                                     (widget.bubbleBorderColor ??
                                             widget.bubbleColor)
-                                        .withOpacity(0.3),
+                                        .withValues(alpha: .3),
                                 width: widget.bubbleBorderWidth,
                               ),
                             ),
@@ -199,7 +199,9 @@ class _LiquidBottomNavBarState extends State<LiquidBottomNavBar> {
                                 children: [
                                   Icon(
                                     item.icon,
-                                    color: widget.itemColor.withOpacity(0.9),
+                                    color: widget.itemColor.withValues(
+                                      alpha: .9,
+                                    ),
                                     size: widget.iconSize,
                                   ),
                                   const SizedBox(height: 3),
@@ -207,7 +209,9 @@ class _LiquidBottomNavBarState extends State<LiquidBottomNavBar> {
                                     item.label,
                                     style: TextStyle(
                                       fontSize: widget.fontSize,
-                                      color: widget.itemColor.withOpacity(0.9),
+                                      color: widget.itemColor.withValues(
+                                        alpha: .9,
+                                      ),
                                       fontWeight: isSelected
                                           ? FontWeight.bold
                                           : FontWeight.w500,

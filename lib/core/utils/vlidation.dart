@@ -1,4 +1,5 @@
 abstract class Validation {
+  // ===== Email =====
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
@@ -12,6 +13,7 @@ abstract class Validation {
     return null;
   }
 
+  // ===== Password =====
   static String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
@@ -24,6 +26,7 @@ abstract class Validation {
     return null;
   }
 
+  // ===== Confirm Password =====
   static String? validateConfirmPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
       return 'Please confirm your password';
@@ -36,6 +39,7 @@ abstract class Validation {
     return null;
   }
 
+  // ===== Name =====
   static String? validateName(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Please enter your name';
@@ -48,6 +52,7 @@ abstract class Validation {
     return null;
   }
 
+  // ===== Phone =====
   static String? validatePhone(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your phone number';
@@ -61,6 +66,7 @@ abstract class Validation {
     return null;
   }
 
+  // ===== Address =====
   static String? validateAddress(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Please enter your address';
@@ -68,4 +74,13 @@ abstract class Validation {
 
     return null;
   }
+}
+
+// ===== Empty Validation =====
+String? emptyValidation(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Please confirm your password';
+  }
+
+  return null;
 }

@@ -1,39 +1,58 @@
-import 'package:catalyst/core/widgets/app_bar.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:flutter/material.dart';
-import 'package:catalyst/core/widgets/base_scaffold.dart';
-import 'package:catalyst/features/drawer/drawer.dart';
 import 'package:catalyst/core/widgets/glass_books.dart';
+import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(
-      appBar: CustomAppBar(actions: [
-        IconButton(onPressed: (){}, icon: const Icon(Icons.notifications)),
-      ],),
-      drawer: const CustomDrawer(),
-      child: SafeArea(
-        child: Padding(
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 15),
+            const CustomText(text: '  Upcoming Lessons', fontSize: 29),
+            const SizedBox(height: 10),
 
-          padding: const EdgeInsets.symmetric(horizontal: 26),
-          child: Column(
-            children: [
-              const Divider(),
-              Align(alignment: Alignment.centerLeft, child: CustomText(text: 'Next Lesson',fontSize: 29,)),
-              const SizedBox(height: 16,),
-              ScheduleCard(
-                subject: 'Math',
-                time: '10:00 AM - 11:00 AM',
-                day: 'Monday',
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 190,
+                aspectRatio: 16 / 9,
+                viewportFraction: 0.85,
+                enableInfiniteScroll: true,
+                reverse: true,
+                autoPlay: true,
+                autoPlayInterval: Duration(seconds: 3),
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enlargeCenterPage: true,
+                enlargeFactor: 0.3,
+                scrollDirection: Axis.horizontal,
+                padEnds: true,
               ),
-
-
-              //SectionsList(),
-            ],
-          ),
+              items: [
+                ScheduleCard(
+                  subject: 'Math',
+                  time: '10:00 AM - 11:00 AM',
+                  day: 'Monday',
+                ),
+                ScheduleCard(
+                  subject: 'Math',
+                  time: '10:00 AM - 11:00 AM',
+                  day: 'Monday',
+                ),
+                ScheduleCard(
+                  subject: 'Math',
+                  time: '10:00 AM - 11:00 AM',
+                  day: 'Monday',
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -54,47 +73,23 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassBox(
-      child: SizedBox(
-        height: 150,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              subject,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Spacer(),
-            const Divider(
-              color: Colors.white24,
-              thickness: 1,
-            ),
-            const SizedBox(height: 6),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  time,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                  ),
-                ),
-                Text(
-                  day,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+    return CustomBox(
+      shadowOffset: const Offset(0, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomText(text: subject, fontSize: 30, fontWeight: FontWeight.w600),
+          const Spacer(),
+          const Divider(color: Colors.black, thickness: 1),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(text: time, fontSize: 13, color: Colors.black),
+              CustomText(text: day, fontSize: 13, color: Colors.black),
+            ],
+          ),
+        ],
       ),
     );
   }

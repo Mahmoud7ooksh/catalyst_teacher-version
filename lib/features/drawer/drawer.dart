@@ -12,60 +12,152 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFF1B2330),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🔹 Logo / Title
-              SizedBox(height:100,),
-              SvgPicture.asset(Assets.catalyst,height: 35,),
-              const SizedBox(height: 60),
+      backgroundColor: const Color(0xFFF5F6FA),
 
-              // 🔹 Drawer Items
-              DrawerItem(
-                icon: CupertinoIcons.person,
-                label: "Profile",
-                onTap: () {},
+      width: MediaQuery.of(context).size.width * 0.7,
+      child: Stack(
+        children: [
+          // Positioned(
+          //   bottom: MediaQuery.of(context).size.height * 0.31,
+          //   child: Transform.rotate(
+          //     angle: 0,
+          //     child: SvgPicture.asset(
+          //       Assets.drawer2,
+          //       fit: BoxFit.contain,
+          //       width: MediaQuery.of(context).size.width,
+          //       height: MediaQuery.of(context).size.height * 0.25,
+          //     ),
+          //   ),
+          // ),
+          // Positioned(
+          //   bottom: MediaQuery.of(context).size.height * -0.21,
+          //   child: Transform.rotate(
+          //     angle: 0,
+          //     child: SvgPicture.asset(
+          //       Assets.drawer1,
+          //       fit: BoxFit.contain,
+          //       width: MediaQuery.of(context).size.width,
+          //       height: MediaQuery.of(context).size.height * 0.7,
+          //     ),
+          //   ),
+          // ),
+          // Positioned(
+          //   bottom: MediaQuery.of(context).size.height * 0.35,
+          //   child: Transform.rotate(
+          //     angle: -.2,
+          //     child: SvgPicture.asset(
+          //       Assets.drawer3,
+          //       fit: BoxFit.contain,
+          //       width: MediaQuery.of(context).size.width,
+          //       height: MediaQuery.of(context).size.height * 0.45,
+          //     ),
+          //   ),
+          // ),
+          Positioned(
+            bottom: MediaQuery.of(context).size.height * 0,
+            left: MediaQuery.of(context).size.width * 0,
+            child: SvgPicture.asset(
+              Assets.drawer123,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * 0.82,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                Assets.appbar,
+                fit: BoxFit.fill,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.15,
               ),
-              DrawerItem(
-                icon: CupertinoIcons.pen,
-                label: "Students requests",
-                onTap: () {
-                  GoRouter.of(context).go(Routs.studentRequests);
-                },
+              const SizedBox(height: 50),
+              SvgPicture.asset(
+                Assets.catalyst,
+                width: MediaQuery.of(context).size.width * 0.6,
               ),
-              DrawerItem(
-                icon: CupertinoIcons.gear,
-                label: "Settings",
-                onTap: () {},
-              ),
-              DrawerItem(
-                icon: CupertinoIcons.globe,
-                label: "English",
-                hasDropdown: true,
-                onTap: () {},
+
+              const SizedBox(height: 89),
+
+              Padding(
+                padding: const EdgeInsets.only(left: 15, right: 45),
+                child: Column(
+                  children: [
+                    DrawerItem(
+                      icon: CupertinoIcons.gear_alt_fill,
+                      label: "Settings",
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 30),
+                    DrawerItem(
+                      icon: CupertinoIcons.globe,
+                      label: "English",
+                      hasDropdown: true,
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 30),
+                    DrawerItem(
+                      icon: CupertinoIcons.moon_fill,
+                      label: "Dark",
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
 
               const Spacer(),
 
-              // 🔹 Logout Button (optional)
-              Divider(color: Colors.white24),
-              DrawerItem(
-                icon: CupertinoIcons.arrow_2_circlepath,
-                label: "Logout",
-                onTap: () {
-                  GoRouter.of(context).go(Routs.login);
-                },
-                color: Colors.redAccent,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    // ➊ DrawerItem بيتمدد ياخد باقي المساحة
+                    Expanded(
+                      child: DrawerItem(
+                        icon: Icons.person,
+                        label: "Unknown",
+                        height: 60,
+                        onTap: () {}, // افتح صفحة بروفايل لو عايز
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+
+                    // ➋ زر خروج دائري نفس ستايل الـ pills
+                    Container(
+                      height: 48,
+                      width: 48,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDCDEE1).withValues(alpha: 0.8),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.25),
+                            offset: const Offset(0, 2),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.logout, color: Colors.black),
+                        iconSize: 22,
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          GoRouter.of(context).go(Routs.login);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 10),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
 }
-

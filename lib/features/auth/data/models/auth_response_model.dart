@@ -1,4 +1,9 @@
-class AuthResponseModel {
+//response login and register are the same
+
+//auth response model
+import 'package:catalyst/features/auth/domain/entities/user_entity.dart';
+
+class AuthResponseModel extends UserEntity {
   final bool success;
   final String message;
   final Data data;
@@ -7,8 +12,9 @@ class AuthResponseModel {
     required this.success,
     required this.message,
     required this.data,
-  });
+  }) : super(name: data.fullName, email: data.email, role: data.type);
 
+  //auth response model to json
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
     return AuthResponseModel(
       success: json['success'],
@@ -16,16 +22,9 @@ class AuthResponseModel {
       data: Data.fromJson(json['data']),
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'success': success,
-      'message': message,
-      'data': data.toJson(),
-    };
-  }
 }
 
+//data model
 class Data {
   final String token;
   final int id;
@@ -41,6 +40,7 @@ class Data {
     required this.type,
   });
 
+  //data model to json
   factory Data.fromJson(Map<String, dynamic> json) {
     return Data(
       token: json['token'],
@@ -49,15 +49,5 @@ class Data {
       email: json['email'],
       type: json['type'],
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'token': token,
-      'id': id,
-      'fullName': fullName,
-      'email': email,
-      'type': type,
-    };
   }
 }
