@@ -1,7 +1,7 @@
 class UpdatePasswordResponseModel {
   final bool success;
   final String message;
-  final dynamic data; // ممكن تكون null أو String (زي الـ token)
+  final dynamic data;
 
   UpdatePasswordResponseModel({
     required this.success,

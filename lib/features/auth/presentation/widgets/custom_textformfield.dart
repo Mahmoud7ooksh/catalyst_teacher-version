@@ -24,7 +24,7 @@ class CustomTextformfield extends StatelessWidget {
     return isPassword ? buildPasswordTextField() : buildNormalTextField();
   }
 
-  /// ===== Password Field with Glass Effect =====
+  /// ===== Password Field =====
   Widget buildPasswordTextField() {
     final ValueNotifier<bool> isHidden = ValueNotifier<bool>(true);
 
@@ -32,37 +32,39 @@ class CustomTextformfield extends StatelessWidget {
       valueListenable: isHidden,
       builder: (context, value, _) {
         return TextFormField(
-          cursorColor: Colors.white,
+          cursorColor: Colors.black,
           validator: validator,
           controller: controller,
           obscureText: value,
-          style: GoogleFonts.comfortaa(color: Colors.white, fontSize: 14),
+          style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 14),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.transparent, // شفاف جوه الجلاس
-            prefixIcon: Icon(icon, color: Colors.white.withValues(alpha: 0.8)),
+            fillColor: const Color(0xFFDCDEE1),
+            prefixIcon: Icon(icon, color: Colors.grey[700]),
             suffixIcon: IconButton(
               onPressed: () => isHidden.value = !isHidden.value,
               icon: Icon(
                 value ? Icons.visibility_off : Icons.visibility,
-                color: Colors.white.withValues(alpha: 0.8),
+                color: Colors.grey[700],
               ),
             ),
             labelText: label,
-            floatingLabelBehavior: FloatingLabelBehavior.auto,
             labelStyle: GoogleFonts.comfortaa(
-              color: Colors.white.withValues(alpha: 0.6),
+              color: Colors.grey[700],
               fontSize: 14,
             ),
+            floatingLabelBehavior: FloatingLabelBehavior.auto,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(
-                color: Colors.white.withValues(alpha: 0.3),
-              ),
+              borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Colors.white, width: 1.2),
+              borderSide: BorderSide(color: Colors.grey.shade600, width: 1),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 14,
             ),
           ),
           onChanged: onChanged,
@@ -71,29 +73,33 @@ class CustomTextformfield extends StatelessWidget {
     );
   }
 
-  /// ===== Normal Field with Glass Effect =====
+  /// ===== Normal Field =====
   Widget buildNormalTextField() {
     return TextFormField(
       validator: validator,
       controller: controller,
-      style: GoogleFonts.comfortaa(color: Colors.white, fontSize: 14),
+      style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 14),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.transparent,
-        prefixIcon: Icon(icon, color: Colors.white.withValues(alpha: 0.8)),
+        fillColor: const Color(0xFFDCDEE1),
+        prefixIcon: Icon(icon, color: Colors.grey[700]),
         labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.auto,
         labelStyle: GoogleFonts.comfortaa(
-          color: Colors.white.withValues(alpha: 0.6),
+          color: Colors.grey[700],
           fontSize: 14,
         ),
+        floatingLabelBehavior: FloatingLabelBehavior.auto,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(color: Colors.white, width: 1.2),
+          borderSide: BorderSide(color: Colors.grey.shade600, width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 14,
         ),
       ),
       onChanged: onChanged,

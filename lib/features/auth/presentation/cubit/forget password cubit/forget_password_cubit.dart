@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'forget_password_state.dart';
-import 'package:catalyst/features/auth/data/repos/auth_repo.dart';
+import 'package:catalyst/features/auth/domain/repos/auth_repo.dart';
 
 class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
   final AuthRepo authRepo;
@@ -13,19 +13,19 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
 
   TextEditingController emailController = TextEditingController();
 
-  late String code ;
+  late String code;
 
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
 
   late String resetToken;
 
-
-
   // =================== forgotPasswordPage (enter email) ===================
   Future<void> forgotPassword() async {
     emit(ForgetPasswordLoading());
-    final result = await authRepo.forgotPassword(ForgotPasswordRequest(email: emailController.text).toJson());
+    final result = await authRepo.forgotPassword(
+      ForgotPasswordRequest(email: emailController.text).toJson(),
+    );
     result.fold(
       (failure) => emit(ForgetPasswordFailure(failure.errMessage)),
       (data) => emit(ForgetPasswordSuccess(data.message)),
@@ -35,20 +35,26 @@ class ForgetPasswordCubit extends Cubit<ForgetPasswordState> {
   // =================== verifyCodePage (enter code) ===================
   Future<void> verifyCode() async {
     emit(ForgetPasswordLoading());
-    final result = await authRepo.verifyCode(VerifyCodeRequest(email: emailController.text, code: code).toJson());
-    result.fold(
-      (failure) => emit(ForgetPasswordFailure(failure.errMessage)),
-      (data) {
-        resetToken = data.data;
-        emit(ForgetPasswordSuccess(data.message));
-      },
+    final result = await authRepo.verifyCode(
+      VerifyCodeRequest(email: emailController.text, code: code).toJson(),
     );
+    result.fold((failure) => emit(ForgetPasswordFailure(failure.errMessage)), (
+      data,
+    ) {
+      resetToken = data.data;
+      emit(ForgetPasswordSuccess(data.message));
+    });
   }
 
   // =================== resetPasswordPage (enter new password) ===================
   Future<void> resetPassword() async {
     emit(ForgetPasswordLoading());
-    final result = await authRepo.resetPassword(ResetPasswordRequest(resetToken: resetToken, newPassword: passwordController.text).toJson());
+    final result = await authRepo.resetPassword(
+      ResetPasswordRequest(
+        resetToken: resetToken,
+        newPassword: passwordController.text,
+      ).toJson(),
+    );
     result.fold(
       (failure) => emit(ForgetPasswordFailure(failure.errMessage)),
       (data) => emit(ForgetPasswordSuccess(data.message)),

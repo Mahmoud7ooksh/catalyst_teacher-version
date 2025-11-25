@@ -1,3 +1,4 @@
+import 'package:catalyst/core/databases/cache_helper.dart';
 import 'package:catalyst/core/utils/assets.dart';
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
@@ -33,24 +34,25 @@ class _SplashViewState extends State<SplashView>
       curve: Curves.easeInOut,
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeOutBack,
-      ),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
 
     // الانتقال بعد 3 ثواني
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        context.go(Routs.login);
+    Future.delayed(const Duration(seconds: 3), () async {
+      if (await CacheHelper.getData(key: 'token') != null) {
+        GoRouter.of(context).go(Routs.root);
+      } else {
+        GoRouter.of(context).go(Routs.login);
       }
     });
   }
 
   @override
+
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -62,10 +64,7 @@ class _SplashViewState extends State<SplashView>
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF141A24),
-              Color(0xFF1E2430),
-            ],
+            colors: [Color(0xFF141A24), Color(0xFF1E2430)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -75,10 +74,7 @@ class _SplashViewState extends State<SplashView>
             opacity: _fadeAnimation,
             child: ScaleTransition(
               scale: _scaleAnimation,
-              child: SvgPicture.asset(
-                Assets.catalyst,
-                width: 350,
-              ),
+              child: SvgPicture.asset(Assets.catalyst, width: 350),
             ),
           ),
         ),

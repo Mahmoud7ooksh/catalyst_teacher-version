@@ -1,70 +1,52 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:catalyst/core/utils/app_colors.dart';
 
-class GlassBox extends StatelessWidget {
+class CustomBox extends StatelessWidget {
   final Widget child;
   final double borderRadius;
   final EdgeInsetsGeometry padding;
-  final double? width;
+  final EdgeInsetsGeometry? margin;
+  final Color? backgroundColor;
+  final double blurRadius;
+  final double spreadRadius;
+  final Offset shadowOffset;
   final double? height;
+  final double? width;
 
-  const GlassBox({
+  const CustomBox({
     super.key,
     required this.child,
-    this.borderRadius = 25,
-    this.padding = const EdgeInsets.all(20),
-    this.width,
+    this.borderRadius = 16,
+    this.padding = const EdgeInsets.all(16),
+    this.margin,
+    this.backgroundColor,
+    this.blurRadius = 12,
+    this.spreadRadius = 0,
+    this.shadowOffset = const Offset(0, 4),
     this.height,
+    this.width,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: Stack(
-        children: [
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-            child: Container(),
-          ),
-
-          Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withValues(alpha: 0.05),
-                  Colors.white.withValues(alpha: 0.05),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
-                width: 1.4,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white.withValues(alpha: 0.0),
-                  blurRadius: 1,
-                  spreadRadius: 0.4,
-                  offset: const Offset(-3, -3),
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.0),
-                  blurRadius: 18,
-                  spreadRadius: 1,
-                  offset: const Offset(5, 5),
-                ),
-              ],
-            ),
-            padding: padding,
-            child: child,
+    return Container(
+      height: height,
+      width: width,
+      margin: margin ?? const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? AppColors.color3, // نفس لون الهوم
+        borderRadius: BorderRadius.circular(borderRadius),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: blurRadius,
+            spreadRadius: spreadRadius,
+            offset: shadowOffset,
           ),
         ],
       ),
+      padding: padding,
+      child: child,
     );
   }
 }

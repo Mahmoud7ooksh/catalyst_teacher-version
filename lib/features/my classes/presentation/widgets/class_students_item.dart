@@ -13,29 +13,29 @@ class ClassStudentsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: GlassBox(
+      child: CustomBox(
         child: ListTile(
-        
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundImage: NetworkImage(student['image'] as String),
+          leading: CircleAvatar(
+            radius: 24,
+            backgroundImage: NetworkImage(student['image'] as String),
+          ),
+          title: CustomText(
+            text: student['name'] as String,
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+          trailing: CustomText(
+            text: student['grade'] as String,
+            color: student['color'] as Color,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
+          onTap: () {
+            context.push(Routs.studentProfile, extra: 'class');
+          },
         ),
-        title: CustomText(
-          text: student['name'] as String,
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-        trailing: CustomText(
-          text: student['grade'] as String,
-          color: student['color'] as Color,
-          fontWeight: FontWeight.bold,
-          fontSize: 15,
-        ),
-        onTap: () {
-          context.push(Routs.studentProfile, extra: 'class');
-        },
       ),
-    ),);
+    );
   }
 }

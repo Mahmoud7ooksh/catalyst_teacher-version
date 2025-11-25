@@ -1,6 +1,9 @@
 import 'dart:ui';
-import 'package:flutter/material.dart';
 import 'package:catalyst/core/utils/app_colors.dart';
+import 'package:catalyst/core/utils/assets.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:catalyst/core/widgets/custom_text.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -18,27 +21,52 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: AppBar(
-          backgroundColor: Colors.white.withOpacity(0.0), // 🔹 لمسة شفافية
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(12),
+            bottomRight: Radius.circular(12),
+          ),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+            child: Container(
+              height: kToolbarHeight + 49, // ارتفاع ال header
+              decoration: BoxDecoration(
+                color: AppColors.color1,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 0,
+          right: 0,
+          child: SvgPicture.asset(
+            Assets.appbar2,
+            height: MediaQuery.of(context).size.height * 0.117,
+          ),
+        ),
+        AppBar(
+          backgroundColor: Colors.transparent, // عشان ياخد لون الـ Container
           elevation: 0,
           centerTitle: centerTitle,
           leading: leading,
-          title: Text(
-            title ?? '',
-            style: const TextStyle(
-              color: AppColors.likeWhite,
-              fontWeight: FontWeight.w600,
-            ),
+          title: CustomText(
+            text: title ?? '',
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
           actions: actions,
         ),
-      ),
+      ],
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 20);
 }

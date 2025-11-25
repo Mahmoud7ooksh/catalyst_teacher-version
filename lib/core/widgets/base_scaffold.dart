@@ -14,21 +14,11 @@ class BaseScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.black, Colors.blue.shade900],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        extendBodyBehindAppBar: true,
-        drawer: drawer,
-        appBar: appBar,
-        body: SafeArea(child: child),
-      ),
+    return Scaffold(
+      backgroundColor: Color(0xffEEEEEE),
+      drawer: drawer,
+      appBar: appBar,
+      body: child,
     );
   }
 }

@@ -1,9 +1,8 @@
-import 'package:catalyst/core/widgets/app_bar.dart';
+import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/core/widgets/glass_books.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class StudentProfile extends StatelessWidget {
   const StudentProfile({super.key, required this.from});
@@ -13,13 +12,6 @@ class StudentProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      appBar: CustomAppBar(
-        title: from == 'requests' ? 'Join Request' : 'Student Profile',
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios_new),
-        ),
-      ),
       child: from == 'requests'
           ? const _JoinRequestView()
           : const _ClassStudentView(),
@@ -51,14 +43,14 @@ class _JoinRequestView extends StatelessWidget {
                 const SizedBox(height: 12),
                 CustomText(
                   text: "Jessica Miller",
-                  color: Colors.white,
+                  color: Colors.black,
                   fontWeight: FontWeight.w600,
                   fontSize: 20,
                 ),
                 const SizedBox(height: 4),
                 CustomText(
                   text: 'Request to join "Advanced Algebra"',
-                  color: Colors.grey[400],
+                  color: Colors.black,
                   fontSize: 14,
                 ),
                 const SizedBox(height: 10),
@@ -81,19 +73,7 @@ class _JoinRequestView extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 // Info card
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C3240),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(16),
+                CustomBox(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
@@ -124,11 +104,7 @@ class _JoinRequestView extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Student Performance Preview
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF2C3240),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                CustomBox(
                   padding: const EdgeInsets.symmetric(
                     vertical: 16,
                     horizontal: 12,
@@ -152,7 +128,7 @@ class _JoinRequestView extends StatelessWidget {
           height: 90,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFF1E2230),
+            color: AppColors.color1,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.3),
@@ -228,7 +204,7 @@ class _ClassStudentView extends StatelessWidget {
           const SizedBox(height: 12),
           const CustomText(
             text: "Jessica Miller",
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.w600,
             fontSize: 20,
           ),
@@ -241,7 +217,7 @@ class _ClassStudentView extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Student performance stats
-          GlassBox(
+          CustomBox(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -255,7 +231,7 @@ class _ClassStudentView extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Additional info section
-          GlassBox(
+          CustomBox(
             padding: const EdgeInsets.all(16),
             child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,15 +268,15 @@ class _InfoItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.grey[400], size: 20),
+          Icon(icon, color: Colors.black, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomText(text: title, color: Colors.grey[400], fontSize: 13),
+                CustomText(text: title, color: Colors.black, fontSize: 16),
                 const SizedBox(height: 2),
-                CustomText(text: value, color: Colors.white, fontSize: 14),
+                CustomText(text: value, color: Colors.black, fontSize: 14),
               ],
             ),
           ),
@@ -320,11 +296,11 @@ class _PerformanceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomText(text: label, color: Colors.grey[400], fontSize: 13),
+        CustomText(text: label, color: Colors.black, fontSize: 16),
         const SizedBox(height: 4),
         CustomText(
           text: value,
-          color: Colors.white,
+          color: Colors.black,
           fontSize: 15,
           fontWeight: FontWeight.w600,
         ),
