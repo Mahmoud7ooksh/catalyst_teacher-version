@@ -1,6 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:catalyst/core/widgets/glass_books.dart';
+import 'package:catalyst/core/widgets/custom_box.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatelessWidget {
@@ -78,7 +78,32 @@ class ScheduleCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(text: subject, fontSize: 30, fontWeight: FontWeight.w600),
+          Row(
+            children: [
+              CustomText(
+                text: subject,
+                fontSize: 30,
+                fontWeight: FontWeight.w600,
+              ),
+              const Spacer(),
+              Container(
+                height: 40,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.person, color: Colors.black),
+                    const SizedBox(width: 5),
+                    CustomText(text: '22', color: Colors.black),
+                  ],
+                ),
+              ),
+            ],
+          ),
           const Spacer(),
           const Divider(color: Colors.black, thickness: 1),
           const SizedBox(height: 6),

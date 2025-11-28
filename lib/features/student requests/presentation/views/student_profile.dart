@@ -1,7 +1,7 @@
 import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:catalyst/core/widgets/glass_books.dart';
+import 'package:catalyst/core/widgets/custom_box.dart';
 import 'package:flutter/material.dart';
 
 class StudentProfile extends StatelessWidget {

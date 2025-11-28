@@ -19,41 +19,25 @@ class AddQuestionSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // 1) Add Manually
           _optionItem(
             icon: Icons.edit_note_outlined,
             label: "Add Manually",
-            onTap: () {
-              // 👈 نقفل الشيت ونرجّع نوع الاختيار
-              Navigator.pop(context, 'manual');
-            },
+            onTap: () => Navigator.pop(context, 'manual'),
           ),
-
-          // 2) Upload from File
           _optionItem(
             icon: Icons.upload_file_outlined,
             label: "Upload from File",
-            onTap: () {
-              Navigator.pop(context, 'file');
-            },
+            onTap: () => Navigator.pop(context, 'file'),
           ),
-
-          // 3) My Question Bank
           _optionItem(
             icon: Icons.folder_special_outlined,
             label: "Choose from My Question Bank",
-            onTap: () {
-              Navigator.pop(context, 'myBank');
-            },
+            onTap: () => Navigator.pop(context, 'myBank'),
           ),
-
-          // 4) Global Question Bank
           _optionItem(
             icon: Icons.public,
             label: "Choose from Global Question Bank",
-            onTap: () {
-              Navigator.pop(context, 'globalBank');
-            },
+            onTap: () => Navigator.pop(context, 'globalBank'),
           ),
         ],
       ),

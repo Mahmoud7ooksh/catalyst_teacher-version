@@ -1,6 +1,6 @@
 import 'package:catalyst/core/databases/api/api_service.dart';
 import 'package:catalyst/core/databases/api/constant.dart';
-import 'package:catalyst/core/databases/cache_helper.dart';
+import 'package:catalyst/core/databases/cache/cache_helper.dart';
 import 'package:catalyst/features/auth/data/models/auth_response_model.dart';
 import 'package:catalyst/features/auth/data/models/update_password_model.dart';
 import 'package:catalyst/features/auth/domain/entities/user_entity.dart';

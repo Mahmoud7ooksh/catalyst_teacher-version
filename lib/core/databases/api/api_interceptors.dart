@@ -1,4 +1,4 @@
-import 'package:catalyst/core/databases/cache_helper.dart';
+import 'package:catalyst/core/databases/cache/cache_helper.dart';
 import 'package:dio/dio.dart';
 
 class ApiInterceptors extends Interceptor {

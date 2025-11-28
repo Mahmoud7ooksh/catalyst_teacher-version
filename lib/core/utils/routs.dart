@@ -2,12 +2,18 @@ import 'package:catalyst/core/utils/service_locator.dart';
 import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart';
 import 'package:catalyst/features/auth/presentation/cubit/login%20cubit/login_cubit.dart';
 import 'package:catalyst/features/auth/presentation/cubit/register%20cubit/register_cubit.dart';
+import 'package:catalyst/features/auth/presentation/views/email_verification_view.dart';
+import 'package:catalyst/features/auth/presentation/views/email_verified.dart';
 import 'package:catalyst/features/auth/presentation/views/forget_password_view.dart';
 import 'package:catalyst/features/auth/presentation/views/reset_password_view.dart';
 import 'package:catalyst/features/auth/presentation/views/verification_code_view.dart';
 import 'package:catalyst/features/auth/presentation/views/login_view.dart';
 import 'package:catalyst/features/auth/presentation/views/register_view.dart';
 import 'package:catalyst/features/auto%20grade/presentation/views/auto_grade_view.dart';
+import 'package:catalyst/features/exam/data/repos/create_exam_repo_impl.dart';
+import 'package:catalyst/features/exam/domain/repo/create_exam_repo.dart';
+import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_cubit.dart';
+import 'package:catalyst/features/exam/presentation/views/exam_question_view.dart';
 import 'package:catalyst/features/home/presentation/views/home_view.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/create%20class%20cubit/create_class_cubit.dart';
 import 'package:catalyst/features/my%20classes/data/repos/my_classes_repo_impl.dart';
@@ -20,7 +26,6 @@ import 'package:catalyst/features/student%20requests/presentation/views/student_
 import 'package:catalyst/features/student%20requests/presentation/views/student_requests.dart';
 import 'package:catalyst/features/exam/presentation/views/create_exam_page.dart';
 import 'package:catalyst/features/my classes/presentation/views/my_classes_view.dart';
-import 'package:catalyst/features/exam/presentation/views/exam_questions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -41,6 +46,8 @@ class Routs {
   static const String myClasses = '/myClasses';
   static const String studentsInClass = '/studentsInClass';
   static const String examQuestions = '/examQuestions';
+  static const String emailVerification = '/emailVerification';
+  static const String emailVerified = '/emailVerified';
 
   static final GoRouter router = GoRouter(
     routes: [
@@ -72,16 +79,30 @@ class Routs {
         path: resetPassword,
         builder: (context, state) => ResetPassword(),
       ),
+      GoRoute(
+        path: emailVerification,
+        builder: (context, state) => const EmailVerificationView(),
+      ),
+      GoRoute(
+        path: emailVerified,
+        builder: (context, state) => const EmailVerifiedView(),
+      ),
       GoRoute(path: root, builder: (context, state) => const Root()),
       GoRoute(path: home, builder: (context, state) => const HomeView()),
 
       GoRoute(
         path: students,
-        builder: (context, state) => const CreateExamPage(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => CreateExamCubit(getIt.get<CreateExamRepo>()),
+          child: const CreateExamPage(),
+        ),
       ),
       GoRoute(
         path: examQuestions,
-        builder: (context, state) => const ExamQuestions(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => CreateExamCubit(getIt<CreateExamRepoImpl>()),
+          child: const ExamQuestionsPage(),
+        ),
       ),
       GoRoute(
         path: autoGrade,

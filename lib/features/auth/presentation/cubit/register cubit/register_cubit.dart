@@ -1,5 +1,4 @@
 import 'package:catalyst/core/errors/exceptions.dart';
-import 'package:catalyst/features/auth/data/models/auth_response_model.dart';
 import 'package:catalyst/features/auth/data/models/auth_request_model.dart';
 import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart';
 import 'package:catalyst/features/auth/domain/entities/user_entity.dart';

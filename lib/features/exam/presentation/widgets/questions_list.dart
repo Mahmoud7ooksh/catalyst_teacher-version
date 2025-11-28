@@ -1,18 +1,18 @@
-import 'package:catalyst/features/exam/data/models/question_model.dart';
 import 'package:flutter/material.dart';
+import 'package:catalyst/features/exam/data/models/question_model.dart';
 import 'question_card.dart';
 
 class QuestionsList extends StatelessWidget {
-  final List<Question> questions;
-  final void Function(int index) onEdit;
-  final void Function(int index) onDelete;
-
   const QuestionsList({
     super.key,
     required this.questions,
     required this.onEdit,
     required this.onDelete,
   });
+
+  final List<Question> questions;
+  final void Function(int index) onEdit;
+  final void Function(int index) onDelete;
 
   @override
   Widget build(BuildContext context) {

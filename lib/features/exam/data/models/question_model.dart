@@ -1,11 +1,35 @@
-enum QuestionType { mcq, shortAnswer, trueFalse }
+import 'package:hive/hive.dart';
 
+part 'question_model.g.dart';
+
+@HiveType(typeId: 1)
+enum QuestionType {
+  @HiveField(0)
+  mcq,
+
+  @HiveField(1)
+  shortAnswer,
+
+  @HiveField(2)
+  trueFalse,
+}
+
+@HiveType(typeId: 2)
 class Question {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String text;
+
+  @HiveField(2)
   final QuestionType type;
+
+  @HiveField(3)
   final String answer;
-  final List<String> options; // فاضية إلا لو MCQ
+
+  @HiveField(4)
+  final List<String> options;
 
   Question({
     required this.id,

@@ -1,14 +1,9 @@
-import 'package:catalyst/features/exam/data/models/question_model.dart';
 import 'package:flutter/material.dart';
 import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
+import 'package:catalyst/features/exam/data/models/question_model.dart';
 
 class QuestionCard extends StatelessWidget {
-  final Question question;
-  final int index;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
   const QuestionCard({
     super.key,
     required this.question,
@@ -16,6 +11,11 @@ class QuestionCard extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
   });
+
+  final Question question;
+  final int index;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   String get typeLabel {
     switch (question.type) {
