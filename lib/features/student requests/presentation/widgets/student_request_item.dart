@@ -1,4 +1,4 @@
-import 'package:catalyst/core/widgets/glass_books.dart';
+import 'package:catalyst/core/widgets/custom_box.dart';
 import 'package:catalyst/features/student%20requests/data/models/student_requests_model.dart';
 import 'package:catalyst/features/student%20requests/presentation/cubits/approve%20reject%20request/approve_reject_request_cubit.dart';
 import 'package:flutter/material.dart';

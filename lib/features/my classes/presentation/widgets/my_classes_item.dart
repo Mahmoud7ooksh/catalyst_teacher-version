@@ -1,6 +1,6 @@
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:catalyst/core/widgets/glass_books.dart';
+import 'package:catalyst/core/widgets/custom_box.dart';
 import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
 import 'package:catalyst/features/my%20classes/data/models/get_my_classes.dart';
 import 'package:flutter/material.dart';

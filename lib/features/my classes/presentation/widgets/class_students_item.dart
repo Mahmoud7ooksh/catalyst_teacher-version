@@ -1,6 +1,6 @@
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:catalyst/core/widgets/glass_books.dart';
+import 'package:catalyst/core/widgets/custom_box.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

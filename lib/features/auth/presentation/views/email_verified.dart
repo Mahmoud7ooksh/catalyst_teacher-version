@@ -1,5 +1,4 @@
 import 'package:catalyst/core/utils/assets.dart';
-import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/auth/presentation/widgets/auth_background.dart';
@@ -7,39 +6,34 @@ import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:catalyst/core/utils/routs.dart';
 
-class EmailVerificationView extends StatelessWidget {
-  const EmailVerificationView({super.key});
+class EmailVerifiedView extends StatelessWidget {
+  const EmailVerifiedView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
       child: AuthBackground(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SvgPicture.asset(Assets.email),
+            SvgPicture.asset(Assets.verified),
             const SizedBox(height: 20),
             const CustomText(
-              text: 'Check Your Email',
+              text: 'Email Verified',
               fontSize: 26,
               fontWeight: FontWeight.bold,
             ),
             const SizedBox(height: 20),
             const CustomText(
               text:
-                  'We have sent a verification code to your email. Please check your inbox and enter the code to verify your email address.',
-            ),
-            const SizedBox(height: 20),
-            const CustomText(
-              text:
-                  'Did not receive the email?\nYou can resend it by clicking the button below.',
+                  'Your email has been verified successfully. You can now log in to your account.',
             ),
             const SizedBox(height: 20),
             CustomButton(
-              text: 'Resend',
+              text: 'Login',
               onPressed: () {
-                GoRouter.of(context).push(Routs.emailVerified);
+                GoRouter.of(context).push(Routs.login);
               },
             ),
           ],
