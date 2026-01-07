@@ -4,10 +4,10 @@ import 'package:catalyst/features/auth/data/repos/auth_repo_implementation.dart'
 import 'package:catalyst/features/auth/presentation/cubit/forget%20password%20cubit/forget_password_cubit.dart';
 import 'package:catalyst/features/auth/presentation/cubit/login%20cubit/login_cubit.dart';
 import 'package:catalyst/features/auth/presentation/cubit/register%20cubit/register_cubit.dart';
+import 'package:catalyst/features/auth/presentation/cubit/email%20verification%20cubit/email_verification_cubit.dart';
 import 'package:catalyst/features/auth/presentation/views/email_verification_view.dart';
-import 'package:catalyst/features/auth/presentation/views/email_verified.dart';
 import 'package:catalyst/features/auth/presentation/views/forget_password_view.dart';
-import 'package:catalyst/features/auth/presentation/views/verification_code_view.dart';
+import 'package:catalyst/features/auth/presentation/views/send_email_view.dart';
 import 'package:catalyst/features/auth/presentation/views/login_view.dart';
 import 'package:catalyst/features/auth/presentation/views/register_view.dart';
 import 'package:catalyst/features/auto%20grade/presentation/views/auto_grade_view.dart';
@@ -94,12 +94,16 @@ class Routs {
       ),
       GoRoute(
         path: emailVerification,
-        builder: (context, state) => const EmailVerificationView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) =>
+              EmailVerificationCubit(getIt.get<AuthRepoImplementation>()),
+          child: EmailVerificationView(email: state.extra as String),
+        ),
       ),
-      GoRoute(
-        path: emailVerified,
-        builder: (context, state) => const EmailVerifiedView(),
-      ),
+      // GoRoute(
+      //   path: emailVerified,
+      //   builder: (context, state) => const EmailVerifiedView(),
+      // ),
       GoRoute(path: root, builder: (context, state) => const Root()),
       GoRoute(path: home, builder: (context, state) => const HomeView()),
 

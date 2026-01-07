@@ -16,6 +16,7 @@ class RegisterCubit extends Cubit<RegisterCubitState> {
   final AuthRepoImplementation _authRepo;
 
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
@@ -45,6 +46,7 @@ class RegisterCubit extends Cubit<RegisterCubitState> {
     Either<Failure, void> result = await _authRepo.signUp(
       SignUpRequest(
         fullName: nameController.text,
+        userName: userNameController.text,
         email: emailController.text,
         password: passwordController.text,
         deviceData: DeviceData(

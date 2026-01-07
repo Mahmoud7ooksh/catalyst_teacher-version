@@ -11,10 +11,10 @@ class AuthRepoImplementation implements AuthRepo {
 
   // =================== login ===================
   @override
-  Future<Either<Failure, void>> login(Map<String, dynamic> loginData) async {
+  Future<Either<Failure, bool>> login(Map<String, dynamic> loginData) async {
     try {
-      await remoteDataSourceImplementation.login(loginData);
-      return const Right(null);
+      final isConfirmed = await remoteDataSourceImplementation.login(loginData);
+      return Right(isConfirmed);
     } catch (e) {
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));
@@ -37,7 +37,7 @@ class AuthRepoImplementation implements AuthRepo {
     }
   }
 
-  // =================== forgotPassword =>(write your email) ===================
+  // =================== forgotPassword => (send email with reset link) ===================
   @override
   Future<Either<Failure, UpdatePasswordResponseModel>> forgotPassword(
     Map<String, dynamic> forgotPasswordData,
@@ -55,33 +55,14 @@ class AuthRepoImplementation implements AuthRepo {
     }
   }
 
-  // =================== verifyCode =>(write your code) ===================
+  // =================== resendVerificationEmail ===================
   @override
-  Future<Either<Failure, UpdatePasswordResponseModel>> verifyCode(
-    Map<String, dynamic> verifyData,
+  Future<Either<Failure, UpdatePasswordResponseModel>> resendVerificationEmail(
+    Map<String, dynamic> resendData,
   ) async {
     try {
-      final response = await remoteDataSourceImplementation.verifyCode(
-        verifyData,
-      );
-      return right(response);
-    } catch (e) {
-      if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
-      }
-      return left(ServerFailure(e.toString()));
-    }
-  }
-
-  // =================== resetPassword =>(write your new password) ===================
-  @override
-  Future<Either<Failure, UpdatePasswordResponseModel>> resetPassword(
-    Map<String, dynamic> resetPasswordData,
-  ) async {
-    try {
-      final response = await remoteDataSourceImplementation.resetPassword(
-        resetPasswordData,
-      );
+      final response = await remoteDataSourceImplementation
+          .resendVerificationEmail(resendData);
       return right(response);
     } catch (e) {
       if (e is DioException) {

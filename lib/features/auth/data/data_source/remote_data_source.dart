@@ -6,16 +6,13 @@ import 'package:catalyst/features/auth/data/models/auth_response_model.dart';
 import 'package:catalyst/features/auth/data/models/update_password_model.dart';
 
 abstract class RemoteDataSource {
-  Future<void> login(Map<String, dynamic> loginData);
+  Future<bool> login(Map<String, dynamic> loginData);
   Future<void> signUp(Map<String, dynamic> signUpData);
   Future<UpdatePasswordResponseModel> forgotPassword(
     Map<String, dynamic> forgotPasswordData,
   );
-  Future<UpdatePasswordResponseModel> verifyCode(
-    Map<String, dynamic> verifyData,
-  );
-  Future<UpdatePasswordResponseModel> resetPassword(
-    Map<String, dynamic> resetPasswordData,
+  Future<UpdatePasswordResponseModel> resendVerificationEmail(
+    Map<String, dynamic> resendData,
   );
 }
 
@@ -25,7 +22,7 @@ class RemoteDataSourceImplementation implements RemoteDataSource {
 
   //==================== login ====================
   @override
-  Future<void> login(Map<String, dynamic> loginData) async {
+  Future<bool> login(Map<String, dynamic> loginData) async {
     final response = await apiService.post(
       path: EndPoint.login,
       data: loginData,
@@ -40,6 +37,12 @@ class RemoteDataSourceImplementation implements RemoteDataSource {
       value: userData.data.refreshToken,
     );
     CacheHelper.saveData(key: Constant.userKey, value: userData.data.id);
+    if (userData.data.isConfirmed) {
+      CacheHelper.removeData(key: Constant.isConfirmedKey);
+    } else {
+      CacheHelper.saveData(key: Constant.isConfirmedKey, value: false);
+    }
+    return userData.data.isConfirmed;
   }
 
   //==================== signUp ====================
@@ -59,9 +62,12 @@ class RemoteDataSourceImplementation implements RemoteDataSource {
       value: userData.data.refreshToken,
     );
     CacheHelper.saveData(key: Constant.userKey, value: userData.data.id);
+    if (userData.data.isConfirmed) {
+      CacheHelper.removeData(key: Constant.isConfirmedKey);
+    } else {
+      CacheHelper.saveData(key: Constant.isConfirmedKey, value: false);
+    }
   }
-
-  //==================== signOut ====================
 
   //==================== forgotPassword ====================
   @override
@@ -75,26 +81,14 @@ class RemoteDataSourceImplementation implements RemoteDataSource {
     return UpdatePasswordResponseModel.fromJson(response);
   }
 
-  //==================== resetPassword ====================
+  //==================== resendVerificationEmail ====================
   @override
-  Future<UpdatePasswordResponseModel> resetPassword(
-    Map<String, dynamic> resetPasswordData,
+  Future<UpdatePasswordResponseModel> resendVerificationEmail(
+    Map<String, dynamic> resendData,
   ) async {
     final response = await apiService.post(
-      path: EndPoint.resetPassword,
-      data: resetPasswordData,
-    );
-    return UpdatePasswordResponseModel.fromJson(response);
-  }
-
-  //==================== verifyCode ====================
-  @override
-  Future<UpdatePasswordResponseModel> verifyCode(
-    Map<String, dynamic> forgotPasswordData,
-  ) async {
-    final response = await apiService.post(
-      path: EndPoint.verifyCode,
-      data: forgotPasswordData,
+      path: EndPoint.resendVerification,
+      data: resendData,
     );
     return UpdatePasswordResponseModel.fromJson(response);
   }
