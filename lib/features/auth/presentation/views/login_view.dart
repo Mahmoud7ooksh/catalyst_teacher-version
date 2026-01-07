@@ -36,11 +36,14 @@ class _LoginViewState extends State<LoginView> {
             ).showSnackBar(SnackBar(content: Text(state.message)));
           }
           if (state is LoginCubitSuccess) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
-            // Navigate only after successful login
-            GoRouter.of(context).go(Routs.root);
+            if (state.isConfirmed) {
+              GoRouter.of(context).go(Routs.root);
+            } else {
+              GoRouter.of(context).push(
+                Routs.emailVerification,
+                extra: context.read<LoginCubit>().emailController.text,
+              );
+            }
           }
         },
         child: Stack(

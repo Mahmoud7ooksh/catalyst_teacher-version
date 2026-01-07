@@ -35,7 +35,10 @@ class _RegisterViewState extends State<RegisterView> {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.successMessage)));
-            GoRouter.of(context).go(Routs.login);
+            GoRouter.of(context).go(
+              Routs.login,
+              extra: context.read<RegisterCubit>().emailController.text,
+            );
           } else if (state is RegisterCubitError) {
             ScaffoldMessenger.of(
               context,
@@ -59,6 +62,15 @@ class _RegisterViewState extends State<RegisterView> {
                       label: 'Full name',
                       icon: CupertinoIcons.person,
                       validator: Validation.validateName,
+                    ),
+                    const SizedBox(height: 20),
+                    CustomTextformfield(
+                      controller: context
+                          .read<RegisterCubit>()
+                          .userNameController,
+                      label: 'Username',
+                      icon: CupertinoIcons.lock,
+                      validator: Validation.validatePassword,
                     ),
                     const SizedBox(height: 20),
 

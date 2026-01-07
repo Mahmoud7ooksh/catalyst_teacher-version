@@ -29,12 +29,14 @@ class Data {
   final String refreshToken;
   final int id;
   final String email;
+  final bool isConfirmed;
 
   Data({
     required this.accessToken,
     required this.refreshToken,
     required this.id,
     required this.email,
+    required this.isConfirmed,
   });
 
   //data model to json
@@ -44,6 +46,7 @@ class Data {
       refreshToken: json['refreshToken'],
       id: json['id'],
       email: json['email'],
+      isConfirmed: json['isConfirmed'],
     );
   }
 }

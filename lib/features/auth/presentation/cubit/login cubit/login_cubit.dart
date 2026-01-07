@@ -39,7 +39,7 @@ class LoginCubit extends Cubit<LoginCubitState> {
       deviceType = iosInfo.model;
     }
 
-    Either<Failure, void> result = await _authRepo.login(
+    Either<Failure, bool> result = await _authRepo.login(
       LoginRequest(
         email: emailController.text,
         password: passwordController.text,
@@ -55,8 +55,8 @@ class LoginCubit extends Cubit<LoginCubitState> {
       (failure) {
         if (!isClosed) emit(LoginCubitError(failure.errMessage));
       },
-      (_) {
-        if (!isClosed) emit(LoginCubitSuccess("Login successfully"));
+      (isConfirmed) {
+        if (!isClosed) emit(LoginCubitSuccess(isConfirmed));
       },
     );
   }

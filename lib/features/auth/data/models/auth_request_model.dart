@@ -41,6 +41,7 @@ class LoginRequest {
 //register request
 class SignUpRequest {
   final String fullName;
+  final String userName;
   final String email;
   final String password;
   final DeviceData deviceData;
@@ -48,6 +49,7 @@ class SignUpRequest {
   // to json
   SignUpRequest({
     required this.fullName,
+    required this.userName,
     required this.email,
     required this.password,
     required this.deviceData,
@@ -55,6 +57,7 @@ class SignUpRequest {
 
   Map<String, dynamic> toJson() => {
     BodyRequest.fullName: fullName,
+    BodyRequest.userName: userName,
     BodyRequest.email: email,
     BodyRequest.password: password,
     "deviceData": deviceData.toJson(),

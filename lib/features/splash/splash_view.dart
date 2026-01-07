@@ -1,4 +1,5 @@
 import 'package:catalyst/core/databases/cache/cache_helper.dart';
+import 'package:catalyst/core/databases/cache/constant.dart';
 import 'package:catalyst/core/utils/assets.dart';
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
@@ -43,8 +44,17 @@ class _SplashViewState extends State<SplashView>
 
     // الانتقال بعد 3 ثواني
     Future.delayed(const Duration(seconds: 3), () async {
-      if (await CacheHelper.getData(key: 'token') != null) {
-        GoRouter.of(context).go(Routs.root);
+      final token = await CacheHelper.getData(key: Constant.tokenKey);
+      final isConfirmed = await CacheHelper.getData(
+        key: Constant.isConfirmedKey,
+      );
+
+      if (token != null) {
+        if (isConfirmed != false) {
+          GoRouter.of(context).go(Routs.root);
+        } else {
+          GoRouter.of(context).go(Routs.login);
+        }
       } else {
         GoRouter.of(context).go(Routs.login);
       }
