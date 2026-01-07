@@ -1,5 +1,8 @@
-import 'package:catalyst/core/utils/vlidation.dart';
+import 'package:catalyst/core/widgets/custom_textformfield.dart';
+import 'package:catalyst/features/exam/presentation/widgets/mcq_options_section.dart';
 import 'package:flutter/material.dart';
+import 'package:catalyst/core/widgets/custom_dialog.dart';
+import 'package:catalyst/core/utils/vlidation.dart';
 import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/exam/data/models/question_model.dart';
@@ -8,11 +11,13 @@ class AddQuestionDialog extends StatefulWidget {
   const AddQuestionDialog({
     super.key,
     required this.onSubmit,
-    this.initialQuestion, // 👈 لو مش null يبقى إحنا بنعمل Edit
+    this.initialQuestion,
+    this.defaultPoints,
   });
 
   final void Function(Question question) onSubmit;
   final Question? initialQuestion;
+  final int? defaultPoints;
 
   bool get isEditing => initialQuestion != null;
 
@@ -26,6 +31,7 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
 
   final TextEditingController _questionController = TextEditingController();
   final TextEditingController _answerController = TextEditingController();
+  final TextEditingController _pointsController = TextEditingController();
   QuestionType _selectedType = QuestionType.mcq;
 
   final List<TextEditingController> _optionControllers = [
@@ -40,35 +46,34 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
   void initState() {
     super.initState();
 
-    // لو بنعدل سؤال قديم، نملى الـ fields
     final q = widget.initialQuestion;
     if (q != null) {
       _questionController.text = q.text;
       _answerController.text = q.answer;
+      _pointsController.text = q.points.toString();
       _selectedType = q.type;
 
       _optionControllers.clear();
 
       if (_selectedType == QuestionType.mcq) {
-        // لو فيه اختيارات قديمة استخدمها
         if (q.options.isNotEmpty) {
           for (final opt in q.options) {
             _optionControllers.add(TextEditingController(text: opt));
           }
         } else {
-          // احتياطي لو options فاضية
           _optionControllers.addAll([
             TextEditingController(),
             TextEditingController(),
           ]);
         }
       } else {
-        // في باقي الأنواع مش محتاج options
         _optionControllers.addAll([
           TextEditingController(),
           TextEditingController(),
         ]);
       }
+    } else {
+      _pointsController.text = widget.defaultPoints?.toString() ?? '1';
     }
   }
 
@@ -76,6 +81,7 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
   void dispose() {
     _questionController.dispose();
     _answerController.dispose();
+    _pointsController.dispose();
     for (final c in _optionControllers) {
       c.dispose();
     }
@@ -84,157 +90,151 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: CustomText(
-        text: widget.isEditing ? "Edit Question" : "Add Question Manually",
-      ),
-      content: SingleChildScrollView(
+    return CustomDialog(
+      padding: const EdgeInsets.all(18),
+      child: SingleChildScrollView(
         child: Form(
           key: _formKey,
           autovalidateMode: _autoValidate,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // ===== Question =====
-              TextFormField(
+              // title
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomText(
+                      text: widget.isEditing
+                          ? "Edit Question"
+                          : "Add Question Manually",
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Question
+              CustomTextformfield(
+                hintText: "Question",
                 controller: _questionController,
-                decoration: const InputDecoration(
-                  labelText: "Question",
-                  border: OutlineInputBorder(),
-                ),
                 validator: Validation.validateQuestion,
               ),
               const SizedBox(height: 12),
-
-              // ===== Type =====
-              DropdownButtonFormField<QuestionType>(
-                initialValue: _selectedType,
-                items: const [
-                  DropdownMenuItem(value: QuestionType.mcq, child: Text('MCQ')),
-                  DropdownMenuItem(
-                    value: QuestionType.shortAnswer,
-                    child: Text('Short Answer'),
-                  ),
-                  DropdownMenuItem(
-                    value: QuestionType.trueFalse,
-                    child: Text('True/False'),
-                  ),
-                ],
-                decoration: const InputDecoration(
-                  labelText: "Type",
-                  border: OutlineInputBorder(),
-                ),
-                onChanged: (v) {
-                  if (v == null) return;
-                  setState(() {
-                    _selectedType = v;
-                    _optionsError = null;
-                    _answerExtraError = null;
-                  });
+              CustomTextformfield(
+                hintText: "Points",
+                controller: _pointsController,
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return "Required";
+                  if (int.tryParse(value) == null) return "Invalid number";
+                  return null;
                 },
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 24),
 
-              // ===== Options (MCQ) =====
-              if (_selectedType == QuestionType.mcq) ...[
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: CustomText(
-                    text: "Options",
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+              // Question Type & Options Container
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black26, width: 1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 8),
-                Column(
-                  children: List.generate(
-                    _optionControllers.length,
-                    (index) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _optionControllers[index],
-                              decoration: InputDecoration(
-                                labelText: "Option ${index + 1}",
-                                border: const OutlineInputBorder(),
-                              ),
-                              onChanged: (_) {
-                                setState(() {
-                                  _optionsError = Validation.validateMcqOptions(
-                                    _optionControllers,
-                                  );
-                                  _answerExtraError = null;
-                                  final options = _optionControllers
-                                      .map((c) => c.text.trim())
-                                      .toList();
-                                  _answerExtraError =
-                                      Validation.validateMcqAnswer(
-                                        _answerController.text,
-                                        options,
-                                      );
-                                });
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          if (_optionControllers.length > 2)
-                            IconButton(
-                              icon: const Icon(
-                                Icons.remove_circle_outline,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _optionControllers.removeAt(index);
-                                  _optionsError = Validation.validateMcqOptions(
-                                    _optionControllers,
-                                  );
-                                });
-                              },
-                            ),
-                        ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Type
+                    DropdownButtonFormField<QuestionType>(
+                      initialValue: _selectedType,
+                      items: const [
+                        DropdownMenuItem(
+                          value: QuestionType.mcq,
+                          child: Text('MCQ'),
+                        ),
+                        DropdownMenuItem(
+                          value: QuestionType.shortAnswer,
+                          child: Text('Short Answer'),
+                        ),
+                        DropdownMenuItem(
+                          value: QuestionType.trueFalse,
+                          child: Text('True/False'),
+                        ),
+                      ],
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xFFDCDEE1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _optionControllers.add(TextEditingController());
-                        _optionsError = Validation.validateMcqOptions(
-                          _optionControllers,
-                        );
-                      });
-                    },
-                    icon: const Icon(Icons.add),
-                    label: const Text("Add option"),
-                  ),
-                ),
-                if (_optionsError != null) ...[
-                  const SizedBox(height: 4),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      _optionsError!,
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 8),
-              ],
+                      onChanged: (v) {
+                        if (v == null) return;
+                        setState(() {
+                          _selectedType = v;
+                          _optionsError = null;
+                          _answerExtraError = null;
 
-              // ===== Answer =====
-              TextFormField(
-                controller: _answerController,
-                decoration: const InputDecoration(
-                  labelText: "Answer",
-                  border: OutlineInputBorder(),
+                          // ensure controllers exist for mcq
+                          if (_selectedType == QuestionType.mcq &&
+                              _optionControllers.isEmpty) {
+                            _optionControllers.addAll([
+                              TextEditingController(),
+                              TextEditingController(),
+                            ]);
+                          }
+                        });
+                      },
+                    ),
+
+                    // Options (MCQ)
+                    if (_selectedType == QuestionType.mcq)
+                      McqOptionsSection(
+                        controllers: _optionControllers,
+                        errorText: _optionsError,
+                        onAddOption: () {
+                          setState(() {
+                            _optionControllers.add(TextEditingController());
+                            _optionsError = Validation.validateMcqOptions(
+                              _optionControllers,
+                            );
+                          });
+                        },
+                        onRemoveOption: (index) {
+                          setState(() {
+                            _optionControllers.removeAt(index);
+                            _optionsError = Validation.validateMcqOptions(
+                              _optionControllers,
+                            );
+                          });
+                        },
+                        onOptionsChanged: (_) {
+                          setState(() {
+                            _optionsError = Validation.validateMcqOptions(
+                              _optionControllers,
+                            );
+                            _answerExtraError = null;
+                            final options = _optionControllers
+                                .map((c) => c.text.trim())
+                                .toList();
+                            _answerExtraError = Validation.validateMcqAnswer(
+                              _answerController.text,
+                              options,
+                            );
+                          });
+                        },
+                      ),
+                  ],
                 ),
+              ),
+              const SizedBox(height: 20),
+
+              // Answer
+              CustomTextformfield(
+                hintText: "Answer",
+                controller: _answerController,
                 validator: (value) {
                   if (_selectedType == QuestionType.trueFalse) {
                     return Validation.validateTrueFalseAnswer(value);
@@ -269,24 +269,34 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
                   ),
                 ),
               ],
+
+              const SizedBox(height: 14),
+
+              // Actions
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const CustomText(text: "Cancel"),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.color1,
+                    ),
+                    onPressed: _onSubmitPressed,
+                    child: CustomText(
+                      text: widget.isEditing ? "Update" : "Add",
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const CustomText(text: "Cancel"),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.color1),
-          onPressed: _onSubmitPressed,
-          child: CustomText(
-            text: widget.isEditing ? "Update" : "Add",
-            color: Colors.white,
-          ),
-        ),
-      ],
     );
   }
 
@@ -333,6 +343,7 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
       type: _selectedType,
       answer: aText,
       options: options,
+      points: int.tryParse(_pointsController.text) ?? 1,
     );
 
     widget.onSubmit(question);

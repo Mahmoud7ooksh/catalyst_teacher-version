@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
+import 'package:catalyst/core/widgets/custom_button.dart';
 
 class CreateExamSection extends StatelessWidget {
   const CreateExamSection({super.key, required this.onCreateExam});

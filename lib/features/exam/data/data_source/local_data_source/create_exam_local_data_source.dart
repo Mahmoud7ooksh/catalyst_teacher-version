@@ -67,6 +67,6 @@ class CreateExamLocalDataSourceImpl implements CreateExamLocalDataSource {
 
   @override
   Future<void> clearExamInfo() async {
-    await _examInfoBox.delete(Constant.examInfoKey);
+    await _examInfoBox.clear();
   }
 }

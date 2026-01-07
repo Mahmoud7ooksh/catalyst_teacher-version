@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "392763151438",
+    "project_id": "catalyst-fcm",
+    "storage_bucket": "catalyst-fcm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392763151438:android:90383637bc191fba225f1f",
+        "android_client_info": {
+          "package_name": "com.example.catalyst"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJjyEwTZq9VSM9CZ_hih9vzxO5XNH9NO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

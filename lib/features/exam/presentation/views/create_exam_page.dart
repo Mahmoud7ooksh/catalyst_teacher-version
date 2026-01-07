@@ -1,9 +1,15 @@
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
+import 'package:catalyst/core/widgets/custom_button.dart';
 import 'package:catalyst/features/exam/data/models/exam_info_model.dart';
 import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_cubit.dart';
 import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_state.dart';
+import 'package:catalyst/features/exam/presentation/widgets/exam_date_picker.dart';
+import 'package:catalyst/features/exam/presentation/widgets/exam_dropdown.dart';
+import 'package:catalyst/features/exam/presentation/widgets/exam_form_field.dart';
+import 'package:catalyst/features/my classes/presentation/cubits/get my classes cubit/get_my_classes_cubit_cubit.dart';
+import 'package:catalyst/features/my classes/presentation/cubits/get my classes cubit/get_my_classes_cubit_state.dart';
+import 'package:catalyst/features/my classes/data/models/get_my_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,15 +26,15 @@ class _CreateExamPageState extends State<CreateExamPage> {
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _durationController = TextEditingController();
   final TextEditingController _marksController = TextEditingController();
+  final TextEditingController _defaultPointsController =
+      TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   DateTime? _dateTime;
-
-  String _selectedClass = 'Class 10-A';
-  String _examType = 'Mid-Term';
-
-  final Color boxColor = const Color(0xFFDCDEE1);
+  List<Lesson> _availableClasses = [];
+  Lesson? _selectedClass;
+  String _examType = 'Midterm';
 
   bool _initialFilled = false; // عشان ما نعبيش الكنترولرز كل rebuild
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
@@ -41,6 +47,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
     // أول ما الصفحة تفتح اطلب من الكيوبيد يجيب ExamInfo من Hive
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CreateExamCubit>().loadExamInfo();
+      context.read<GetMyClassesCubitCubit>().getMyClasses();
     });
   }
 
@@ -50,7 +57,10 @@ class _CreateExamPageState extends State<CreateExamPage> {
       listener: (context, state) {
         // لو حفظنا بنجاح ⇒ روح لصفحة الأسئلة
         if (state is CreateExamSuccess) {
-          GoRouter.of(context).push(Routs.examQuestions);
+          GoRouter.of(context).push(
+            Routs.examQuestions,
+            extra: int.tryParse(_defaultPointsController.text.trim()),
+          );
         }
 
         if (state is CreateExamError) {
@@ -67,9 +77,16 @@ class _CreateExamPageState extends State<CreateExamPage> {
           _descController.text = info.description ?? '';
           _durationController.text = info.durationMinutes?.toString() ?? '';
           _marksController.text = info.totalMarks?.toString() ?? '';
+          _defaultPointsController.text = info.defaultPoints?.toString() ?? '1';
           _dateTime = info.scheduledAt;
-          if (info.classIds.isNotEmpty) {
-            _selectedClass = info.classIds.first;
+          if (info.classIds.isNotEmpty && _availableClasses.isNotEmpty) {
+            try {
+              _selectedClass = _availableClasses.firstWhere(
+                (c) => c.id.toString() == info.classIds.first,
+              );
+            } catch (_) {
+              // If not found, ignore or pick first
+            }
           }
           _initialFilled = true;
         }
@@ -89,7 +106,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _label('Exam Title'),
-                        _filledTextField(
+                        ExamFormField(
                           controller: _titleController,
                           hint: 'e.g. Mid-Term Biology Test',
                           validator: (value) {
@@ -102,7 +119,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
 
                         const SizedBox(height: 12),
                         _label('Description'),
-                        _filledTextField(
+                        ExamFormField(
                           controller: _descController,
                           hint: 'Enter a brief description of the exam',
                           maxLines: 4,
@@ -111,63 +128,118 @@ class _CreateExamPageState extends State<CreateExamPage> {
                         ),
 
                         const SizedBox(height: 12),
+
                         Row(
                           children: [
                             // Select Class
                             Expanded(
+                              flex: 1,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   _label('Select Class'),
-                                  _decoratedDropdown(
-                                    DropdownButtonHideUnderline(
-                                      child: DropdownButton<String>(
-                                        value: _selectedClass,
-                                        style: const TextStyle(
-                                          color: Colors.black,
-                                        ),
-                                        items:
-                                            [
-                                                  'Class 10-A',
-                                                  'Class 10-B',
-                                                  'Class 11-A',
-                                                ]
+                                  BlocConsumer<
+                                    GetMyClassesCubitCubit,
+                                    GetMyClassesCubitState
+                                  >(
+                                    listener: (context, state) {
+                                      if (state is GetMyClassesCubitSuccess) {
+                                        setState(() {
+                                          _availableClasses = state.response;
+
+                                          // Check if currently selected class exists in the new list
+                                          final exists = _availableClasses.any(
+                                            (c) => c == _selectedClass,
+                                          );
+
+                                          // If not selected or doesn't exist, pick the first one
+                                          if (_availableClasses.isNotEmpty &&
+                                              (_selectedClass == null ||
+                                                  !exists)) {
+                                            _selectedClass =
+                                                _availableClasses.first;
+                                          }
+                                        });
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      if (state is GetMyClassesCubitLoading) {
+                                        return const Center(
+                                          child: SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      return ExamDropdown(
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<Lesson>(
+                                            value:
+                                                _availableClasses.contains(
+                                                  _selectedClass,
+                                                )
+                                                ? _selectedClass
+                                                : null,
+                                            hint: const Text('Select Class'),
+                                            isExpanded: true,
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                            ),
+                                            items: _availableClasses
                                                 .map(
                                                   (c) => DropdownMenuItem(
                                                     value: c,
-                                                    child: Text(c),
+                                                    child: Text(
+                                                      c.subject,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
                                                 )
                                                 .toList(),
-                                        onChanged: (v) =>
-                                            setState(() => _selectedClass = v!),
-                                        dropdownColor: Colors.white,
-                                      ),
-                                    ),
+                                            onChanged: (v) => setState(
+                                              () => _selectedClass = v,
+                                            ),
+                                            dropdownColor: Colors.white,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
                             ),
                             const SizedBox(width: 12),
 
-                            // Exam Type (UI فقط)
+                            // Exam Type
                             Expanded(
+                              flex: 1,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   _label('Exam Type'),
-                                  _decoratedDropdown(
-                                    DropdownButtonHideUnderline(
+                                  ExamDropdown(
+                                    child: DropdownButtonHideUnderline(
                                       child: DropdownButton<String>(
                                         value: _examType,
                                         style: const TextStyle(
                                           color: Colors.black,
                                         ),
-                                        items: ['Mid-Term', 'Final', 'Quiz']
+                                        items: ['Midterm', 'Final', 'Quiz']
                                             .map(
                                               (c) => DropdownMenuItem(
                                                 value: c,
-                                                child: Text(c),
+                                                child: Text(
+                                                  c,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
                                               ),
                                             )
                                             .toList(),
@@ -180,50 +252,44 @@ class _CreateExamPageState extends State<CreateExamPage> {
                                 ],
                               ),
                             ),
+                            const SizedBox(width: 12),
+
+                            // Default Points
+                            Expanded(
+                              flex: 1,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _label('Def. Points'),
+                                  ExamFormField(
+                                    controller: _defaultPointsController,
+                                    hint: '1',
+                                    keyboardType: TextInputType.number,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
+                                        return 'Required';
+                                      }
+                                      final n = int.tryParse(value.trim());
+                                      if (n == null || n <= 0) {
+                                        return '> 0';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
 
                         const SizedBox(height: 12),
                         _label('Date & Time'),
-                        GestureDetector(
+                        ExamDatePicker(
+                          dateTime: _dateTime,
                           onTap: _pickDateTime,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 18,
-                            ),
-                            decoration: BoxDecoration(
-                              color: boxColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: CustomText(
-                                    text: _dateTime == null
-                                        ? 'mm/dd/yyyy, --:--'
-                                        : '${_dateTime!.month}/${_dateTime!.day}/${_dateTime!.year}, ${_dateTime!.hour.toString().padLeft(2, '0')}:${_dateTime!.minute.toString().padLeft(2, '0')}',
-                                    color: Colors.black.withValues(alpha: 0.8),
-                                  ),
-                                ),
-                                Icon(
-                                  Icons.calendar_month_outlined,
-                                  color: Colors.black.withValues(alpha: 0.8),
-                                ),
-                              ],
-                            ),
-                          ),
+                          errorText: _dateTimeError,
                         ),
-                        if (_dateTimeError != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            _dateTimeError!,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
 
                         const SizedBox(height: 12),
                         Row(
@@ -234,7 +300,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   _label('Duration (mins)'),
-                                  _filledTextField(
+                                  ExamFormField(
                                     controller: _durationController,
                                     hint: 'e.g. 60',
                                     keyboardType: TextInputType.number,
@@ -261,7 +327,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   _label('Total Marks'),
-                                  _filledTextField(
+                                  ExamFormField(
                                     controller: _marksController,
                                     hint: 'e.g. 100',
                                     keyboardType: TextInputType.number,
@@ -325,7 +391,9 @@ class _CreateExamPageState extends State<CreateExamPage> {
       totalMarks: int.tryParse(_marksController.text.trim()),
       durationMinutes: int.tryParse(_durationController.text.trim()),
       scheduledAt: _dateTime,
-      classIds: [_selectedClass],
+      classIds: _selectedClass != null ? [_selectedClass!.id.toString()] : [],
+      defaultPoints: int.tryParse(_defaultPointsController.text.trim()),
+      examType: _examType,
     );
 
     context.read<CreateExamCubit>().saveExamInfo(examInfo);
@@ -354,43 +422,4 @@ class _CreateExamPageState extends State<CreateExamPage> {
     padding: const EdgeInsets.only(bottom: 6.0),
     child: CustomText(text: text, fontWeight: FontWeight.w600),
   );
-
-  Widget _filledTextField({
-    required TextEditingController controller,
-    required String hint,
-    int maxLines = 1,
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: boxColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: TextFormField(
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
-        style: const TextStyle(color: Colors.black87),
-        validator: validator,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(color: Colors.black45),
-          border: InputBorder.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _decoratedDropdown(Widget child) {
-    return Container(
-      decoration: BoxDecoration(
-        color: boxColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: child,
-    );
-  }
 }

@@ -39,6 +39,49 @@ class ServerFailure extends Failure {
   }
 
   factory ServerFailure.fromResponse(int? statusCode, dynamic response) {
-    return ServerFailure(response['message']);
+    // Handle null or empty response
+    if (response == null || response.toString().isEmpty) {
+      return ServerFailure(_getDefaultMessageForStatusCode(statusCode));
+    }
+
+    // Try to extract message from response
+    String message;
+    try {
+      if (response is Map<String, dynamic>) {
+        message =
+            response['message'] ?? _getDefaultMessageForStatusCode(statusCode);
+      } else if (response is String) {
+        message = response;
+      } else {
+        message = _getDefaultMessageForStatusCode(statusCode);
+      }
+    } catch (e) {
+      message = _getDefaultMessageForStatusCode(statusCode);
+    }
+
+    return ServerFailure(message);
+  }
+
+  static String _getDefaultMessageForStatusCode(int? statusCode) {
+    switch (statusCode) {
+      case 400:
+        return 'Bad request. Please check your input.';
+      case 401:
+        return 'Unauthorized. Please login again.';
+      case 403:
+        return 'Access forbidden. You don\'t have permission to perform this action.';
+      case 404:
+        return 'Resource not found.';
+      case 409:
+        return 'Conflict. This resource already exists.';
+      case 422:
+        return 'Validation error. Please check your input.';
+      case 500:
+        return 'Internal server error. Please try again later.';
+      case 503:
+        return 'Service unavailable. Please try again later.';
+      default:
+        return 'An error occurred. Please try again.';
+    }
   }
 }

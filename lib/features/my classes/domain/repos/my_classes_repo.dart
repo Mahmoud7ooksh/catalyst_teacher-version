@@ -5,7 +5,7 @@ import 'package:dartz/dartz.dart';
 
 abstract class MyClassesRepo {
   Future<Either<Failure, CreateClassResponse>> createClass(
-    Map<String, dynamic> createClassData,
+    CreateClassRequest createClassData,
   );
   Future<Either<Failure, List<Lesson>>> getMyClasses();
 }

@@ -31,11 +31,15 @@ class Question {
   @HiveField(4)
   final List<String> options;
 
+  @HiveField(5)
+  final int points;
+
   Question({
     required this.id,
     required this.text,
     required this.type,
     required this.answer,
     this.options = const [],
+    this.points = 1,
   });
 }

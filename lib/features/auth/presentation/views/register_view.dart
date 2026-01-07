@@ -7,8 +7,8 @@ import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/auth/presentation/cubit/register%20cubit/register_cubit.dart';
 import 'package:catalyst/features/auth/presentation/cubit/register%20cubit/register_state.dart';
 import 'package:catalyst/features/auth/presentation/widgets/auth_background.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_textformfield.dart';
+import 'package:catalyst/core/widgets/custom_button.dart';
+import 'package:catalyst/core/widgets/custom_textformfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,7 +29,7 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      child: BlocConsumer<RegisterCubit, RegisterCubitState>(
+      child: BlocListener<RegisterCubit, RegisterCubitState>(
         listener: (context, state) {
           if (state is RegisterCubitSuccess) {
             ScaffoldMessenger.of(
@@ -42,123 +42,119 @@ class _RegisterViewState extends State<RegisterView> {
             ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
           }
         },
-        builder: (context, state) {
-          return Stack(
-            children: [
-              Opacity(
-                opacity: state is RegisterCubitLoading ? 0.5 : 1,
-                child: AuthBackground(
-                  child: Form(
-                    key: _formKey,
-                    autovalidateMode: autoValidate,
-                    child: Column(
+        child: Stack(
+          children: [
+            AuthBackground(
+              child: Form(
+                key: _formKey,
+                autovalidateMode: autoValidate,
+                child: Column(
+                  children: [
+                    SvgPicture.asset(Assets.catalyst, fit: BoxFit.cover),
+                    const SizedBox(height: 60),
+
+                    // ============= textfields ===========
+                    CustomTextformfield(
+                      controller: context.read<RegisterCubit>().nameController,
+                      label: 'Full name',
+                      icon: CupertinoIcons.person,
+                      validator: Validation.validateName,
+                    ),
+                    const SizedBox(height: 20),
+
+                    CustomTextformfield(
+                      controller: context.read<RegisterCubit>().emailController,
+                      label: 'Email',
+                      icon: CupertinoIcons.mail,
+                      validator: Validation.validateEmail,
+                    ),
+                    const SizedBox(height: 20),
+
+                    CustomTextformfield(
+                      controller: context
+                          .read<RegisterCubit>()
+                          .passwordController,
+                      label: 'Password',
+                      icon: CupertinoIcons.lock,
+                      validator: Validation.validatePassword,
+                      isPassword: true,
+                    ),
+                    const SizedBox(height: 20),
+
+                    CustomTextformfield(
+                      controller: context
+                          .read<RegisterCubit>()
+                          .confirmPasswordController,
+                      label: 'Confirm Password',
+                      icon: CupertinoIcons.lock,
+                      isPassword: true,
+                      validator: (value) => Validation.validateConfirmPassword(
+                        value,
+                        context.read<RegisterCubit>().passwordController.text,
+                      ),
+                    ),
+
+                    const SizedBox(height: 50),
+
+                    /// Sign Up button
+                    CustomButton(
+                      text: 'SIGN UP',
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          context.read<RegisterCubit>().signUp();
+                        } else {
+                          setState(() {
+                            autoValidate = AutovalidateMode.always;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    /// Already have account
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SvgPicture.asset(Assets.catalyst, fit: BoxFit.cover),
-                        const SizedBox(height: 60),
-
-                        // ============= textfields ===========
-                        CustomTextformfield(
-                          controller: context
-                              .read<RegisterCubit>()
-                              .nameController,
-                          label: 'Full name',
-                          icon: CupertinoIcons.person,
-                          validator: Validation.validateName,
+                        const CustomText(
+                          text: 'Already have an account?',
+                          color: AppColors.text,
                         ),
-                        const SizedBox(height: 20),
-
-                        CustomTextformfield(
-                          controller: context
-                              .read<RegisterCubit>()
-                              .emailController,
-                          label: 'Email',
-                          icon: CupertinoIcons.mail,
-                          validator: Validation.validateEmail,
-                        ),
-                        const SizedBox(height: 20),
-
-                        CustomTextformfield(
-                          controller: context
-                              .read<RegisterCubit>()
-                              .passwordController,
-                          label: 'Password',
-                          icon: CupertinoIcons.lock,
-                          validator: Validation.validatePassword,
-                          isPassword: true,
-                        ),
-                        const SizedBox(height: 20),
-
-                        CustomTextformfield(
-                          controller: context
-                              .read<RegisterCubit>()
-                              .confirmPasswordController,
-                          label: 'Confirm Password',
-                          icon: CupertinoIcons.lock,
-                          isPassword: true,
-                          validator: (value) =>
-                              Validation.validateConfirmPassword(
-                                value,
-                                context
-                                    .read<RegisterCubit>()
-                                    .passwordController
-                                    .text,
-                              ),
-                        ),
-
-                        const SizedBox(height: 50),
-
-                        /// Sign Up button
-                        CustomButton(
-                          text: 'SIGN UP',
+                        const SizedBox(width: 5),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.color2,
+                            padding: EdgeInsets.zero,
+                          ),
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              context.read<RegisterCubit>().signUp();
-                            } else {
-                              setState(() {
-                                autoValidate = AutovalidateMode.always;
-                              });
-                            }
+                            GoRouter.of(context).go(Routs.login);
                           },
-                        ),
-                        const SizedBox(height: 20),
-
-                        /// Already have account
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const CustomText(
-                              text: 'Already have an account?',
-                              color: AppColors.text,
-                            ),
-                            const SizedBox(width: 5),
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppColors.color2,
-                                padding: EdgeInsets.zero,
-                              ),
-                              onPressed: () {
-                                GoRouter.of(context).go(Routs.login);
-                              },
-                              child: CustomText(
-                                text: 'LOGIN',
-                                color: AppColors.color2,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ],
+                          child: CustomText(
+                            text: 'LOGIN',
+                            color: AppColors.color2,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
+            ),
 
-              // ===== loading =====
-              if (state is RegisterCubitLoading)
-                const Center(child: CircularProgressIndicator()),
-            ],
-          );
-        },
+            // ===== loading =====
+            BlocBuilder<RegisterCubit, RegisterCubitState>(
+              builder: (context, state) {
+                if (state is RegisterCubitLoading) {
+                  return Container(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

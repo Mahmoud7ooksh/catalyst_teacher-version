@@ -1,6 +1,5 @@
-import 'dart:ui';
-import 'package:catalyst/core/widgets/custom_text.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_textformfield.dart';
+import 'package:catalyst/core/databases/cache/cache_helper.dart';
+import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/create%20class%20cubit/create_class_cubit.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/create%20class%20cubit/create_class_state.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/get%20my%20classes%20cubit/get_my_classes_cubit_cubit.dart';
@@ -20,96 +19,11 @@ class _MyClassesViewState extends State<MyClassesView> {
   @override
   void initState() {
     super.initState();
-    context.read<GetMyClassesCubitCubit>().getMyClasses();
-  }
-
-  void showAddClassDialog() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(20),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity(0.3)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const CustomText(
-                      text: "Add New Class",
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(height: 16),
-                    CustomTextformfield(
-                      controller: context
-                          .read<CreateClassCubit>()
-                          .subjectController,
-                      label: 'Subject',
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            context
-                                .read<CreateClassCubit>()
-                                .subjectController
-                                .clear();
-                          },
-                          child: const CustomText(
-                            text: "Cancel",
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await context
-                                .read<CreateClassCubit>()
-                                .createClass();
-                            Navigator.pop(context);
-                            context
-                                .read<CreateClassCubit>()
-                                .subjectController
-                                .clear();
-                            context
-                                .read<GetMyClassesCubitCubit>()
-                                .getMyClasses();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const CustomText(
-                            text: "Add",
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    CacheHelper.getData(key: 'userId').then((userId) {
+      if (userId != null && mounted) {
+        context.read<GetMyClassesCubitCubit>().getMyClasses();
+      }
+    });
   }
 
   @override
@@ -117,26 +31,40 @@ class _MyClassesViewState extends State<MyClassesView> {
     return MultiBlocListener(
       listeners: [
         BlocListener<CreateClassCubit, CreateClassState>(
+          listenWhen: (previous, current) =>
+              previous != current &&
+              (current is CreateClassSuccess || current is CreateClassError),
           listener: (context, state) {
             if (state is CreateClassSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Class created successfully')),
+                SnackBar(
+                  content: Text('تم إنشاء الكلاس بنجاح ✓'),
+                  backgroundColor: Colors.green,
+                ),
               );
               context.read<GetMyClassesCubitCubit>().getMyClasses();
             } else if (state is CreateClassError) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(state.message)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('فشل إنشاء الكلاس، حاول تاني'),
+                  backgroundColor: Colors.red,
+                ),
+              );
             }
           },
         ),
       ],
       child: BlocConsumer<GetMyClassesCubitCubit, GetMyClassesCubitState>(
+        listenWhen: (previous, current) =>
+            previous != current && current is GetMyClassesCubitError,
         listener: (context, state) {
           if (state is GetMyClassesCubitError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('فشل تحميل الكلاسات، حاول تاني'),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -146,6 +74,46 @@ class _MyClassesViewState extends State<MyClassesView> {
 
           if (state is GetMyClassesCubitSuccess) {
             final lessons = state.response;
+
+            // Check if the list is empty
+            if (lessons.isEmpty) {
+              return Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.class_outlined,
+                          size: 80,
+                          color: AppColors.color1,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'مفيش كلاسات',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.color1,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'ابدأ بإنشاء كلاس جديد',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.color1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (context.watch<CreateClassCubit>().state
+                      is CreateClassLoading)
+                    const Center(child: CircularProgressIndicator()),
+                ],
+              );
+            }
 
             return Stack(
               children: [

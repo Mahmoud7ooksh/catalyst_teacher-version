@@ -1,14 +1,13 @@
 import 'package:catalyst/core/databases/api/api_service.dart';
 import 'package:catalyst/core/databases/api/constant.dart';
 import 'package:catalyst/core/databases/cache/cache_helper.dart';
+import 'package:catalyst/core/databases/cache/constant.dart';
 import 'package:catalyst/features/auth/data/models/auth_response_model.dart';
 import 'package:catalyst/features/auth/data/models/update_password_model.dart';
-import 'package:catalyst/features/auth/domain/entities/user_entity.dart';
 
 abstract class RemoteDataSource {
-  Future<UserEntity> login(Map<String, dynamic> loginData);
-  Future<UserEntity> signUp(Map<String, dynamic> signUpData);
-  Future<void> signOut();
+  Future<void> login(Map<String, dynamic> loginData);
+  Future<void> signUp(Map<String, dynamic> signUpData);
   Future<UpdatePasswordResponseModel> forgotPassword(
     Map<String, dynamic> forgotPasswordData,
   );
@@ -26,34 +25,43 @@ class RemoteDataSourceImplementation implements RemoteDataSource {
 
   //==================== login ====================
   @override
-  Future<UserEntity> login(Map<String, dynamic> loginData) async {
+  Future<void> login(Map<String, dynamic> loginData) async {
     final response = await apiService.post(
       path: EndPoint.login,
       data: loginData,
     );
     final userData = AuthResponseModel.fromJson(response);
-    CacheHelper.saveData(key: 'token', value: userData.data.token);
-    return userData;
+    CacheHelper.saveData(
+      key: Constant.tokenKey,
+      value: userData.data.accessToken,
+    );
+    CacheHelper.saveData(
+      key: Constant.refreshTokenKey,
+      value: userData.data.refreshToken,
+    );
+    CacheHelper.saveData(key: Constant.userKey, value: userData.data.id);
   }
 
   //==================== signUp ====================
   @override
-  Future<UserEntity> signUp(Map<String, dynamic> signUpData) async {
+  Future<void> signUp(Map<String, dynamic> signUpData) async {
     final response = await apiService.post(
       path: EndPoint.signUp,
       data: signUpData,
     );
     final userData = AuthResponseModel.fromJson(response);
-    CacheHelper.saveData(key: 'token', value: userData.data.token);
-    return userData;
+    CacheHelper.saveData(
+      key: Constant.tokenKey,
+      value: userData.data.accessToken,
+    );
+    CacheHelper.saveData(
+      key: Constant.refreshTokenKey,
+      value: userData.data.refreshToken,
+    );
+    CacheHelper.saveData(key: Constant.userKey, value: userData.data.id);
   }
 
   //==================== signOut ====================
-  @override
-  Future<void> signOut() async {
-    final response = await apiService.post(path: "");
-    return response;
-  }
 
   //==================== forgotPassword ====================
   @override
@@ -85,7 +93,7 @@ class RemoteDataSourceImplementation implements RemoteDataSource {
     Map<String, dynamic> forgotPasswordData,
   ) async {
     final response = await apiService.post(
-      path: EndPoint.forgotPassword,
+      path: EndPoint.verifyCode,
       data: forgotPasswordData,
     );
     return UpdatePasswordResponseModel.fromJson(response);
