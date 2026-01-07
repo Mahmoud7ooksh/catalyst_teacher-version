@@ -17,7 +17,8 @@ abstract class CreateExamRepo {
   Future<Either<Failure, ExamInfo>> loadExamInfo();
   Future<Either<Failure, void>> saveExamInfo(ExamInfo examInfo);
   Future<Either<Failure, void>> clearExamInfo();
-
-  // ===== create exam =====
-  //Future<Either<Failure, String>> createExam();
+  Future<Either<Failure, String>> createExam(
+    String lessonId,
+    Map<String, dynamic> examData,
+  );
 }

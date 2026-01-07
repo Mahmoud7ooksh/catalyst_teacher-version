@@ -1,7 +1,6 @@
 import 'package:catalyst/core/errors/exceptions.dart';
 import 'package:catalyst/features/auth/data/data_source/remote_data_source.dart';
 import 'package:catalyst/features/auth/data/models/update_password_model.dart';
-import 'package:catalyst/features/auth/domain/entities/user_entity.dart';
 import 'package:catalyst/features/auth/domain/repos/auth_repo.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -12,47 +11,29 @@ class AuthRepoImplementation implements AuthRepo {
 
   // =================== login ===================
   @override
-  Future<Either<Failure, UserEntity>> login(
-    Map<String, dynamic> loginData,
-  ) async {
+  Future<Either<Failure, void>> login(Map<String, dynamic> loginData) async {
     try {
-      final response = await remoteDataSourceImplementation.login(loginData);
-      return right(response);
+      await remoteDataSourceImplementation.login(loginData);
+      return const Right(null);
     } catch (e) {
       if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
+        return Left(ServerFailure.fromDioError(e));
       }
-      return left(ServerFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
   // =================== signUp ===================
   @override
-  Future<Either<Failure, UserEntity>> signUp(
-    Map<String, dynamic> signUpData,
-  ) async {
+  Future<Either<Failure, void>> signUp(Map<String, dynamic> signUpData) async {
     try {
-      final response = await remoteDataSourceImplementation.signUp(signUpData);
-      return right(response);
+      await remoteDataSourceImplementation.signUp(signUpData);
+      return const Right(null);
     } catch (e) {
       if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
+        return Left(ServerFailure.fromDioError(e));
       }
-      return left(ServerFailure(e.toString()));
-    }
-  }
-
-  // =================== signOut ===================
-  @override
-  Future<Either<Failure, void>> signOut() async {
-    try {
-      final response = await remoteDataSourceImplementation.signOut();
-      return right(response);
-    } catch (e) {
-      if (e is DioException) {
-        return left(ServerFailure.fromDioError(e));
-      }
-      return left(ServerFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 

@@ -23,13 +23,15 @@ class ExamInfoAdapter extends TypeAdapter<ExamInfo> {
       durationMinutes: fields[3] as int?,
       scheduledAt: fields[4] as DateTime?,
       classIds: (fields[5] as List).cast<String>(),
+      defaultPoints: fields[6] as int?,
+      examType: fields[7] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ExamInfo obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -41,7 +43,11 @@ class ExamInfoAdapter extends TypeAdapter<ExamInfo> {
       ..writeByte(4)
       ..write(obj.scheduledAt)
       ..writeByte(5)
-      ..write(obj.classIds);
+      ..write(obj.classIds)
+      ..writeByte(6)
+      ..write(obj.defaultPoints)
+      ..writeByte(7)
+      ..write(obj.examType);
   }
 
   @override

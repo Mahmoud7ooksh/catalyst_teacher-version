@@ -2,7 +2,7 @@ import 'package:catalyst/core/utils/assets.dart';
 import 'package:catalyst/core/widgets/base_scaffold.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/auth/presentation/widgets/auth_background.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
+import 'package:catalyst/core/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';

@@ -17,6 +17,12 @@ class ExamInfo {
   @HiveField(5)
   final List<String> classIds;
 
+  @HiveField(6)
+  final int? defaultPoints;
+
+  @HiveField(7)
+  final String? examType;
+
   ExamInfo({
     this.title,
     this.description,
@@ -24,6 +30,8 @@ class ExamInfo {
     this.durationMinutes,
     this.scheduledAt,
     this.classIds = const [],
+    this.defaultPoints,
+    this.examType,
   });
 
   factory ExamInfo.fromJson(Map<String, dynamic> json) {
@@ -36,6 +44,8 @@ class ExamInfo {
           ? DateTime.parse(json['scheduledAt'] as String)
           : null,
       classIds: (json['classIds'] as List?)?.cast<String>() ?? [],
+      defaultPoints: json['defaultPoints'] as int?,
+      examType: json['examType'] as String?,
     );
   }
 
@@ -47,6 +57,8 @@ class ExamInfo {
       'durationMinutes': durationMinutes,
       'scheduledAt': scheduledAt?.toIso8601String(),
       'classIds': classIds,
+      'defaultPoints': defaultPoints,
+      'examType': examType,
     };
   }
 }

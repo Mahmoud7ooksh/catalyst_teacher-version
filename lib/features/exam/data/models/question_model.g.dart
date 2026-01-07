@@ -22,6 +22,7 @@ class QuestionAdapter extends TypeAdapter<Question> {
       type: fields[2] as QuestionType,
       answer: fields[3] as String,
       options: (fields[4] as List).cast<String>(),
+      points: fields[5] == null ? 1 : fields[5] as int,
     );
   }
 
@@ -38,7 +39,9 @@ class QuestionAdapter extends TypeAdapter<Question> {
       ..writeByte(3)
       ..write(obj.answer)
       ..writeByte(4)
-      ..write(obj.options);
+      ..write(obj.options)
+      ..writeByte(5)
+      ..write(obj.points);
   }
 
   @override

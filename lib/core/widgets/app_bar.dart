@@ -12,12 +12,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.actions,
     this.centerTitle = true,
+    this.height,
   });
 
   final String? title;
   final Widget? leading;
   final List<Widget>? actions;
   final bool centerTitle;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
             child: Container(
-              height: kToolbarHeight + 49, // ارتفاع ال header
+              height: height ?? (kToolbarHeight + 49), // ارتفاع ال header
               decoration: BoxDecoration(
                 color: AppColors.color1,
                 borderRadius: const BorderRadius.only(
@@ -45,9 +47,25 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         Positioned(
           top: 0,
           right: 0,
-          child: SvgPicture.asset(
-            Assets.appbar2,
-            height: MediaQuery.of(context).size.height * 0.117,
+          child: Builder(
+            builder: (context) {
+              // نحسب عرض مناسب بناءً على عرض الشاشة
+              final svgWidth = (MediaQuery.of(context).size.width * 3).clamp(
+                300.0,
+                300.0,
+              );
+              final svgHeight = (MediaQuery.of(context).size.height * 3).clamp(
+                MediaQuery.of(context).size.width * 0.257,
+                MediaQuery.of(context).size.width * 0.257,
+              );
+
+              return SvgPicture.asset(
+                Assets.appbar2,
+                width: svgWidth,
+                height: svgHeight,
+                fit: BoxFit.contain,
+              );
+            },
           ),
         ),
         AppBar(
@@ -68,5 +86,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 20);
+  Size get preferredSize {
+    return Size.fromHeight(height ?? (kToolbarHeight + 10));
+  }
 }

@@ -6,10 +6,15 @@ import 'package:catalyst/features/exam/data/models/question_model.dart';
 import 'package:catalyst/features/exam/domain/repo/create_exam_repo.dart';
 import 'package:dartz/dartz.dart';
 
+import 'package:catalyst/core/databases/api/constant.dart';
+import 'package:catalyst/core/databases/api/dio_service.dart';
+import 'package:dio/dio.dart';
+
 class CreateExamRepoImpl implements CreateExamRepo {
   final CreateExamLocalDataSource _createExamLocalDataSource;
+  final DioService dioService;
 
-  CreateExamRepoImpl(this._createExamLocalDataSource);
+  CreateExamRepoImpl(this._createExamLocalDataSource, this.dioService);
 
   // ===================== Add Question =====================
   @override
@@ -109,13 +114,23 @@ class CreateExamRepoImpl implements CreateExamRepo {
     }
   }
 
-  // ===================== Create Exam (API) - لاحقاً =====================
-  // @override
-  // Future<Either<Failure, String>> createExam() async {
-  //   try {
-  //     // هنا بعدين هتستخدم examInfo + questions وتبعتهم للـ API
-  //   } catch (e) {
-  //     return Left(CacheFailure.fromException(e));
-  //   }
-  // }
+  // ===================== Create Exam (API) =====================
+  @override
+  Future<Either<Failure, String>> createExam(
+    String lessonId,
+    Map<String, dynamic> examData,
+  ) async {
+    try {
+      final response = await dioService.post(
+        path: EndPoint.createExam.replaceAll('{id}', lessonId),
+        data: examData,
+      );
+      return Right(response['message'] ?? 'Exam created successfully');
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioError(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

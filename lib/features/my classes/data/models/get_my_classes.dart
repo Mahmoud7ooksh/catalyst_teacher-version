@@ -29,16 +29,16 @@ class GetMyClassesResponse {
 class Lesson {
   final int id;
   final String subject;
-  final int studentsCount;
-  final Teacher teacher;
-  final List<dynamic> schedules;
+  final int? studentsCount;
+  final Teacher? teacher;
+  final List<dynamic> lessonSchedules;
 
   Lesson({
     required this.id,
     required this.subject,
-    required this.studentsCount,
-    required this.teacher,
-    required this.schedules,
+    this.studentsCount,
+    this.teacher,
+    required this.lessonSchedules,
   });
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
@@ -46,8 +46,10 @@ class Lesson {
       id: json['id'],
       subject: json['subject'],
       studentsCount: json['studentsCount'],
-      teacher: Teacher.fromJson(json['teacher']),
-      schedules: json['schedules'] ?? [],
+      teacher: json['teacher'] != null
+          ? Teacher.fromJson(json['teacher'])
+          : null,
+      lessonSchedules: json['lessonSchedules'] ?? json['schedules'] ?? [],
     );
   }
 
@@ -55,8 +57,8 @@ class Lesson {
     'id': id,
     'subject': subject,
     'studentsCount': studentsCount,
-    'teacher': teacher.toJson(),
-    'schedules': schedules,
+    'teacher': teacher?.toJson(),
+    'lessonSchedules': lessonSchedules,
   };
 }
 

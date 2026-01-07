@@ -1,7 +1,7 @@
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/core/widgets/custom_box.dart';
-import 'package:catalyst/features/auth/presentation/widgets/custom_button.dart';
+import 'package:catalyst/core/widgets/custom_button.dart';
 import 'package:catalyst/features/my%20classes/data/models/get_my_classes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -40,7 +40,9 @@ class ClassItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       CustomText(
-                        text: item.studentsCount.toString(),
+                        text: item.studentsCount != null
+                            ? '${item.studentsCount} students'
+                            : 'No students yet',
                         color: Colors.black,
                         fontSize: 13,
                       ),
@@ -48,22 +50,37 @@ class ClassItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                CircleAvatar(
-                  radius: 20,
-                  backgroundImage: NetworkImage(
-                    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
+                if (item.teacher != null)
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: NetworkImage(
+                      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
+                    ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 6),
             const Divider(color: Colors.black, thickness: 1),
             const SizedBox(height: 6),
-            CustomText(
-              text: '2025-11-05 10:00 AM - 11:00 AM',
-              color: Colors.black,
-              fontSize: 12,
-            ),
+            // Display lesson schedules
+            if (item.lessonSchedules.isNotEmpty)
+              ...item.lessonSchedules.map((schedule) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: CustomText(
+                    text:
+                        '${schedule['day']} - ${schedule['startTime']} (${schedule['duration']} min)',
+                    color: Colors.black,
+                    fontSize: 12,
+                  ),
+                );
+              })
+            else
+              CustomText(
+                text: 'No schedule available',
+                color: Colors.grey,
+                fontSize: 12,
+              ),
             const SizedBox(height: 18),
             CustomButton(
               text: 'View Details',

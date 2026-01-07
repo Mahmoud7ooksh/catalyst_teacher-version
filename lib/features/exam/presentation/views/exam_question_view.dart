@@ -1,4 +1,6 @@
 import 'package:catalyst/features/exam/presentation/views/exam_questions.dart';
+import 'package:catalyst/core/utils/routs.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:catalyst/features/exam/data/models/question_model.dart';
@@ -7,13 +9,16 @@ import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/cre
 import 'package:catalyst/features/exam/presentation/widgets/add_question_dialog.dart';
 
 class ExamQuestionsPage extends StatefulWidget {
-  const ExamQuestionsPage({super.key});
+  final int? defaultPoints;
+  const ExamQuestionsPage({super.key, this.defaultPoints});
 
   @override
   State<ExamQuestionsPage> createState() => _ExamQuestionsPageState();
 }
 
 class _ExamQuestionsPageState extends State<ExamQuestionsPage> {
+  List<Question> _questions = [];
+
   @override
   void initState() {
     super.initState();
@@ -25,57 +30,68 @@ class _ExamQuestionsPageState extends State<ExamQuestionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CreateExamCubit, CreateExamState>(
-      builder: (context, state) {
-        final List<Question> questions;
+    return BlocConsumer<CreateExamCubit, CreateExamState>(
+      listener: (context, state) {
+        if (state is CreateExamSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+          GoRouter.of(context).go(Routs.root);
+        } else if (state is CreateExamError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
 
         if (state is CreateExamQuestionsLoaded) {
-          questions = state.questions;
-        } else {
-          questions = const [];
+          _questions = state.questions;
+        }
+      },
+      builder: (context, state) {
+        // Update local questions if loaded (redundant with listener but safe)
+        if (state is CreateExamQuestionsLoaded) {
+          _questions = state.questions;
         }
 
-        // لو أول مرة ولسه بيحمّل
-        if (state is CreateExamLoading && questions.isEmpty) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        return Stack(
+          children: [
+            ExamQuestionsView(
+              questions: _questions,
 
-        return ExamQuestionsView(
-          questions: questions,
-
-          // ==== Add Question ====
-          onQuestionAdded: (q) {
-            context.read<CreateExamCubit>().addQuestion(q);
-          },
-
-          // ==== Delete Question ====
-          onQuestionDeleted: (index) {
-            final question = questions[index];
-            context.read<CreateExamCubit>().deleteQuestion(question.id);
-          },
-
-          // ==== Edit Question ====
-          onQuestionEditRequested: (index) async {
-            final question = questions[index];
-
-            final updated = await showDialog<Question>(
-              context: context,
-              builder: (ctx) => AddQuestionDialog(
-                onSubmit: (q) => Navigator.pop(ctx, q),
-                initialQuestion: question, // هنظبطها تحت
+              onQuestionAdded: (q) {
+                context.read<CreateExamCubit>().addQuestion(q);
+              },
+              onQuestionDeleted: (index) {
+                if (index >= 0 && index < _questions.length) {
+                  final question = _questions[index];
+                  context.read<CreateExamCubit>().deleteQuestion(question.id);
+                }
+              },
+              onQuestionEditRequested: (index) async {
+                if (index >= 0 && index < _questions.length) {
+                  final question = _questions[index];
+                  final updated = await showDialog<Question>(
+                    context: context,
+                    builder: (ctx) => AddQuestionDialog(
+                      onSubmit: (q) => Navigator.pop(ctx, q),
+                      initialQuestion: question,
+                    ),
+                  );
+                  if (updated != null) {
+                    context.read<CreateExamCubit>().updateQuestion(updated);
+                  }
+                }
+              },
+              onCreateExam: () {
+                context.read<CreateExamCubit>().submitExam();
+              },
+            ),
+            if (state is CreateExamLoading)
+              Container(
+                color: Colors.black54,
+                child: const Center(child: CircularProgressIndicator()),
               ),
-            );
-
-            if (updated != null) {
-              context.read<CreateExamCubit>().updateQuestion(updated);
-            }
-          },
-
-          // ==== Create Exam ====
-          onCreateExam: () async {
-            // هنا بعدين هتجيب examInfo + questions من الكيوبيد
-            // وتبعتهم للـ API أو تروح لصفحة Review
-          },
+          ],
         );
       },
     );
