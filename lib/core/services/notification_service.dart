@@ -1,13 +1,20 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class NotificationService {
-  static final FirebaseMessaging _firebaseMessaging =
-      FirebaseMessaging.instance;
+  static FirebaseMessaging? _firebaseMessaging;
 
   static Future<String?> init() async {
+    if (Platform.isLinux) {
+      log('NotificationService: Skipping initialization on Linux');
+      return null;
+    }
+
+    _firebaseMessaging ??= FirebaseMessaging.instance;
+
     // Request permission for iOS/Web
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    NotificationSettings settings = await _firebaseMessaging!.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -20,7 +27,7 @@ class NotificationService {
     }
 
     // Get the token
-    String? token = await _firebaseMessaging.getToken();
+    String? token = await _firebaseMessaging!.getToken();
     log('FCM Token: $token');
     return token;
   }

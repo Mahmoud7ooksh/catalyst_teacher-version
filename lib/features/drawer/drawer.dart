@@ -1,5 +1,6 @@
 import 'package:catalyst/core/databases/cache/cache_helper.dart';
 import 'package:catalyst/core/databases/cache/constant.dart';
+import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/core/utils/assets.dart';
 import 'package:catalyst/core/utils/routs.dart';
 import 'package:catalyst/features/drawer/drawer_item.dart';
@@ -38,13 +39,13 @@ class CustomDrawer extends StatelessWidget {
                     width: double.infinity,
                     height: MediaQuery.of(context).size.height * 0.15,
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 61),
                   SvgPicture.asset(
                     Assets.catalyst,
                     width: MediaQuery.of(context).size.width * 0.6,
                   ),
 
-                  const SizedBox(height: 89),
+                  const SizedBox(height: 82),
 
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 45),
@@ -111,8 +112,11 @@ class CustomDrawer extends StatelessWidget {
                             ],
                           ),
                           child: IconButton(
-                            icon: const Icon(Icons.logout, color: Colors.black),
-                            iconSize: 22,
+                            icon: const Icon(
+                              Icons.logout,
+                              color: AppColors.color1,
+                            ),
+                            iconSize: 24,
                             padding: EdgeInsets.zero,
                             onPressed: () async {
                               // =================== signOut ===================

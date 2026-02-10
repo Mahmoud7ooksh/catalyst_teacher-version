@@ -37,20 +37,21 @@ class StudentRequestItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomText(
-                          text: student.studentName,
+                          text:
+                              student.student.fullName ?? student.student.email,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                         CustomText(
-                          text: student.lessonSubject,
+                          text: student.student.email,
                           color: Colors.black,
                           fontSize: 15,
                         ),
-                        CustomText(
-                          text: student.createdAt.toString(),
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
+                        // CustomText(
+                        //   text: student.createdAt.toString(),
+                        //   color: Colors.black,
+                        //   fontSize: 12,
+                        // ),
                       ],
                     ),
                   ),
@@ -66,7 +67,8 @@ class StudentRequestItem extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       context.read<ApproveRejectRequestCubit>().rejectRequest(
-                        student.id.toString(),
+                        requestId: student.id.toString(),
+                        lessonId: student.lessonId,
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -85,7 +87,8 @@ class StudentRequestItem extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       context.read<ApproveRejectRequestCubit>().approveRequest(
-                        student.id.toString(),
+                        requestId: student.id.toString(),
+                        lessonId: student.lessonId,
                       );
                     },
                     style: ElevatedButton.styleFrom(

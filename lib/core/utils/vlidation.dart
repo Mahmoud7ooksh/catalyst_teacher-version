@@ -139,4 +139,35 @@ abstract class Validation {
     }
     return null;
   }
+
+  // ===== Exam Dates =====
+  static String? validateExamStartDate(DateTime? startDate) {
+    if (startDate == null) {
+      return 'Please select exam date & time';
+    }
+
+    // Allow a small buffer (5 mins) for the teacher filling out the form
+    if (startDate.isBefore(
+      DateTime.now().subtract(const Duration(minutes: 5)),
+    )) {
+      return 'Start date cannot be in the past';
+    }
+
+    return null;
+  }
+
+  static String? validateExamClosingDate(
+    DateTime? closingDate,
+    DateTime? startDate,
+  ) {
+    if (closingDate == null) {
+      return 'Please select closing date & time';
+    }
+
+    if (startDate != null && !closingDate.isAfter(startDate)) {
+      return 'Closing date must be after start date';
+    }
+
+    return null;
+  }
 }

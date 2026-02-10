@@ -56,8 +56,8 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
       _optionControllers.clear();
 
       if (_selectedType == QuestionType.mcq) {
-        if (q.options.isNotEmpty) {
-          for (final opt in q.options) {
+        if (q.options != null && q.options!.isNotEmpty) {
+          for (final opt in q.options!) {
             _optionControllers.add(TextEditingController(text: opt));
           }
         } else {

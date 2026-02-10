@@ -31,7 +31,7 @@ class _CreateClassPageState extends State<CreateClassPage> {
         if (state is CreateClassSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('تم إنشاء الكلاس بنجاح ✓'),
+              content: Text('Class created successfully'),
               backgroundColor: Colors.green,
             ),
           );

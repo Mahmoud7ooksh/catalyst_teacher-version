@@ -136,17 +136,21 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       durationMinutes: examInfo!.durationMinutes ?? 60,
       defaultPoints: examInfo!.defaultPoints ?? 1,
       examType: examInfo!.examType ?? 'Midterm',
-      questions: questions
-          .map(
-            (q) => QuestionRequestModel(
-              text: q.text,
-              type: _mapQuestionType(q.type),
-              options: q.options,
-              correctOptionIndex: q.options.indexOf(q.answer),
-              maxPoints: q.points,
-            ),
-          )
-          .toList(),
+      closingDate: examInfo!.closingDate?.toIso8601String(),
+      questions: questions.map((q) {
+        final isMcq =
+            q.type == QuestionType.mcq || q.type == QuestionType.trueFalse;
+        return QuestionRequestModel(
+          text: q.text,
+          type: _mapQuestionType(q.type),
+          options: isMcq ? (q.options ?? []) : null,
+          correctOptionIndex: isMcq
+              ? (q.options?.indexOf(q.answer) ?? 0)
+              : null,
+          maxPoints: q.points ?? 1,
+          correctAnswer: isMcq ? null : q.answer,
+        );
+      }).toList(),
     );
 
     // 4. Call API

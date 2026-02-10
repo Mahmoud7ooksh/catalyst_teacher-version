@@ -21,15 +21,15 @@ class QuestionAdapter extends TypeAdapter<Question> {
       text: fields[1] as String,
       type: fields[2] as QuestionType,
       answer: fields[3] as String,
-      options: (fields[4] as List).cast<String>(),
-      points: fields[5] == null ? 1 : fields[5] as int,
+      options: (fields[4] as List?)?.cast<String>(),
+      points: fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Question obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)

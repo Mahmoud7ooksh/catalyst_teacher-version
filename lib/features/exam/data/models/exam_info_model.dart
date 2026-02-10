@@ -23,6 +23,9 @@ class ExamInfo {
   @HiveField(7)
   final String? examType;
 
+  @HiveField(8)
+  final DateTime? closingDate;
+
   ExamInfo({
     this.title,
     this.description,
@@ -32,6 +35,7 @@ class ExamInfo {
     this.classIds = const [],
     this.defaultPoints,
     this.examType,
+    this.closingDate,
   });
 
   factory ExamInfo.fromJson(Map<String, dynamic> json) {
@@ -46,6 +50,9 @@ class ExamInfo {
       classIds: (json['classIds'] as List?)?.cast<String>() ?? [],
       defaultPoints: json['defaultPoints'] as int?,
       examType: json['examType'] as String?,
+      closingDate: json['closingDate'] != null
+          ? DateTime.parse(json['closingDate'] as String)
+          : null,
     );
   }
 
@@ -59,6 +66,7 @@ class ExamInfo {
       'classIds': classIds,
       'defaultPoints': defaultPoints,
       'examType': examType,
+      'closingDate': closingDate?.toIso8601String(),
     };
   }
 }

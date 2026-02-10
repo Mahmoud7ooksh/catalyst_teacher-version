@@ -64,12 +64,12 @@ class Lesson {
 
 class Teacher {
   final int id;
-  final String fullName;
+  final String? fullName;
 
-  Teacher({required this.id, required this.fullName});
+  Teacher({required this.id, this.fullName});
 
   factory Teacher.fromJson(Map<String, dynamic> json) {
-    return Teacher(id: json['id'], fullName: json['fullName']);
+    return Teacher(id: json['id'], fullName: json['fullName'] ?? json['name']);
   }
 
   Map<String, dynamic> toJson() => {'id': id, 'fullName': fullName};
