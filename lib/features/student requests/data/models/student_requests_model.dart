@@ -30,56 +30,52 @@ class StudentRequestsResponse {
 
 class StudentRequest {
   final int id;
-  final int studentId;
-  final String studentName;
-  final String studentEmail;
   final int lessonId;
-  final String lessonSubject;
+  final Student student;
   final String status;
-  final String message;
-  final DateTime createdAt;
-  final DateTime? respondedAt;
 
   StudentRequest({
     required this.id,
-    required this.studentId,
-    required this.studentName,
-    required this.studentEmail,
     required this.lessonId,
-    required this.lessonSubject,
+    required this.student,
     required this.status,
-    required this.message,
-    required this.createdAt,
-    this.respondedAt,
   });
 
   factory StudentRequest.fromJson(Map<String, dynamic> json) {
     return StudentRequest(
       id: json['id'] as int,
-      studentId: json['studentId'] as int,
-      studentName: json['studentName'] as String,
-      studentEmail: json['studentEmail'] as String,
       lessonId: json['lessonId'] as int,
-      lessonSubject: json['lessonSubject'] as String,
+      student: Student.fromJson(json['student'] as Map<String, dynamic>),
       status: json['status'] as String,
-      message: json['message'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      respondedAt: json['respondedAt'] != null
-          ? DateTime.parse(json['respondedAt'] as String)
-          : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'studentId': studentId,
-    'studentName': studentName,
-    'studentEmail': studentEmail,
     'lessonId': lessonId,
-    'lessonSubject': lessonSubject,
+    'student': student.toJson(),
     'status': status,
-    'message': message,
-    'createdAt': createdAt.toIso8601String(),
-    'respondedAt': respondedAt?.toIso8601String(),
+  };
+}
+
+class Student {
+  final int id;
+  final String? fullName;
+  final String email;
+
+  Student({required this.id, this.fullName, required this.email});
+
+  factory Student.fromJson(Map<String, dynamic> json) {
+    return Student(
+      id: json['id'] as int,
+      fullName: json['fullName'] as String?,
+      email: json['email'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'fullName': fullName,
+    'email': email,
   };
 }

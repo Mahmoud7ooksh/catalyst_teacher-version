@@ -7,18 +7,30 @@ class ApproveRejectRequestCubit extends Cubit<ApproveRejectRequestState> {
     : super(ApproveRejectRequestInitial());
   final StudentRequestsRepo studentRequestsRepo;
 
-  Future<void> approveRequest(String requestId) async {
+  Future<void> approveRequest({
+    required String requestId,
+    required int lessonId,
+  }) async {
     emit(ApproveRejectRequestLoading());
-    final result = await studentRequestsRepo.approveRequest(requestId);
+    final result = await studentRequestsRepo.approveRequest(
+      requestId: requestId,
+      lessonId: lessonId,
+    );
     result.fold(
       (failure) => emit(ApproveRejectRequestError(message: failure.errMessage)),
       (message) => emit(ApproveRejectRequestSuccess(message: message)),
     );
   }
 
-  Future<void> rejectRequest(String requestId) async {
+  Future<void> rejectRequest({
+    required String requestId,
+    required int lessonId,
+  }) async {
     emit(ApproveRejectRequestLoading());
-    final result = await studentRequestsRepo.rejectRequest(requestId);
+    final result = await studentRequestsRepo.rejectRequest(
+      requestId: requestId,
+      lessonId: lessonId,
+    );
     result.fold(
       (failure) => emit(ApproveRejectRequestError(message: failure.errMessage)),
       (message) => emit(ApproveRejectRequestSuccess(message: message)),

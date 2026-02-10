@@ -10,6 +10,7 @@ import 'package:catalyst/features/exam/presentation/widgets/exam_form_field.dart
 import 'package:catalyst/features/my classes/presentation/cubits/get my classes cubit/get_my_classes_cubit_cubit.dart';
 import 'package:catalyst/features/my classes/presentation/cubits/get my classes cubit/get_my_classes_cubit_state.dart';
 import 'package:catalyst/features/my classes/data/models/get_my_classes.dart';
+import 'package:catalyst/core/utils/vlidation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -32,6 +33,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   DateTime? _dateTime;
+  DateTime? _closingDate;
   List<Lesson> _availableClasses = [];
   Lesson? _selectedClass;
   String _examType = 'Midterm';
@@ -39,6 +41,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
   bool _initialFilled = false; // عشان ما نعبيش الكنترولرز كل rebuild
   AutovalidateMode _autoValidateMode = AutovalidateMode.disabled;
   String? _dateTimeError;
+  String? _closingDateError;
 
   @override
   void initState() {
@@ -79,6 +82,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
           _marksController.text = info.totalMarks?.toString() ?? '';
           _defaultPointsController.text = info.defaultPoints?.toString() ?? '1';
           _dateTime = info.scheduledAt;
+          _closingDate = info.closingDate;
           if (info.classIds.isNotEmpty && _availableClasses.isNotEmpty) {
             try {
               _selectedClass = _availableClasses.firstWhere(
@@ -292,6 +296,14 @@ class _CreateExamPageState extends State<CreateExamPage> {
                         ),
 
                         const SizedBox(height: 12),
+                        _label('Closing Date & Time'),
+                        ExamDatePicker(
+                          dateTime: _closingDate,
+                          onTap: _pickClosingDateTime,
+                          errorText: _closingDateError,
+                        ),
+
+                        const SizedBox(height: 12),
                         Row(
                           children: [
                             // Duration
@@ -371,19 +383,20 @@ class _CreateExamPageState extends State<CreateExamPage> {
     // شغل ال validators
     final valid = _formKey.currentState?.validate() ?? false;
 
-    // validation على الـ DateTime
+    // validation على التواريخ
     setState(() {
-      _dateTimeError = _dateTime == null
-          ? 'Please select exam date & time'
-          : null;
+      _dateTimeError = Validation.validateExamStartDate(_dateTime);
+      _closingDateError = Validation.validateExamClosingDate(
+        _closingDate,
+        _dateTime,
+      );
 
-      // لو الفورم مش valid أول مرة، فعّل الـ autoValidate زي شاشة الـ Register
-      if (!valid || _dateTimeError != null) {
+      if (!valid || _dateTimeError != null || _closingDateError != null) {
         _autoValidateMode = AutovalidateMode.always;
       }
     });
 
-    if (!valid || _dateTimeError != null) return;
+    if (!valid || _dateTimeError != null || _closingDateError != null) return;
 
     final examInfo = ExamInfo(
       title: _titleController.text.trim(),
@@ -394,9 +407,28 @@ class _CreateExamPageState extends State<CreateExamPage> {
       classIds: _selectedClass != null ? [_selectedClass!.id.toString()] : [],
       defaultPoints: int.tryParse(_defaultPointsController.text.trim()),
       examType: _examType,
+      closingDate: _closingDate,
     );
 
     context.read<CreateExamCubit>().saveExamInfo(examInfo);
+  }
+
+  Future<void> _pickClosingDateTime() async {
+    final d = await showDatePicker(
+      context: context,
+      initialDate: _closingDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+    );
+    if (d == null) return;
+    final t = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_closingDate ?? DateTime.now()),
+    );
+    if (t == null) return;
+    setState(() {
+      _closingDate = DateTime(d.year, d.month, d.day, t.hour, t.minute);
+    });
   }
 
   Future<void> _pickDateTime() async {

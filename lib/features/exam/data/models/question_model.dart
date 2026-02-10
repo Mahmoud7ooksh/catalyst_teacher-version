@@ -29,10 +29,10 @@ class Question {
   final String answer;
 
   @HiveField(4)
-  final List<String> options;
+  final List<String>? options;
 
   @HiveField(5)
-  final int points;
+  final int? points;
 
   Question({
     required this.id,

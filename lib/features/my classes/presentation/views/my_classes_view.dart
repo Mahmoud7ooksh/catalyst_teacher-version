@@ -38,7 +38,7 @@ class _MyClassesViewState extends State<MyClassesView> {
             if (state is CreateClassSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('تم إنشاء الكلاس بنجاح ✓'),
+                  content: Text('Class created successfully'),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -46,7 +46,7 @@ class _MyClassesViewState extends State<MyClassesView> {
             } else if (state is CreateClassError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('فشل إنشاء الكلاس، حاول تاني'),
+                  content: Text('Failed to create class, try again'),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -61,7 +61,7 @@ class _MyClassesViewState extends State<MyClassesView> {
           if (state is GetMyClassesCubitError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('فشل تحميل الكلاسات، حاول تاني'),
+                content: Text('Failed to load classes, try again'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -90,7 +90,7 @@ class _MyClassesViewState extends State<MyClassesView> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'مفيش كلاسات',
+                          'No classes',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -99,7 +99,7 @@ class _MyClassesViewState extends State<MyClassesView> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'ابدأ بإنشاء كلاس جديد',
+                          'Start by creating a new class',
                           style: TextStyle(
                             fontSize: 16,
                             color: AppColors.color1,

@@ -5,6 +5,9 @@ class CacheHelper {
 
   static Future<void> init() async {
     sharedPreferences = await SharedPreferences.getInstance();
+    print(
+      'DEBUG: CacheHelper initialized. Token: ${sharedPreferences.getString('token')}',
+    );
   }
 
   static Future<dynamic> saveData({
@@ -23,11 +26,25 @@ class CacheHelper {
   }
 
   static Future<dynamic> getData({required String key}) async {
-    SharedPreferences shared = await SharedPreferences.getInstance();
-    return shared.get(key);
+    // Ensure initialized if called statically/unexpectedly, though init() should handle it.
+    // However, SharedPreferences.getInstance() is a singleton so calling it again is safe.
+    // Direct access to late variable checks are better.
+    try {
+      print(
+        'DEBUG: CacheHelper.getData key: $key, value: ${sharedPreferences.get(key)}',
+      );
+      return sharedPreferences.get(key);
+    } catch (e) {
+      print('DEBUG: CacheHelper error reading $key: $e');
+      return null;
+    }
   }
 
   static Future<bool> removeData({required String key}) async {
     return await sharedPreferences.remove(key);
+  }
+
+  static Future<bool> clearAllData() async {
+    return await sharedPreferences.clear();
   }
 }

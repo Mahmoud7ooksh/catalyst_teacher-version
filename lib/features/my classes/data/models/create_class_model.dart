@@ -62,13 +62,12 @@ class CreateClassResponse {
   });
 
   factory CreateClassResponse.fromJson(Map<String, dynamic> json) {
-    // بعض الـ APIs يلفّوا النتيجة داخل 'data'
     final payload = json['data'] ?? json;
     return CreateClassResponse(
-      id: payload['id'] ?? payload['class_id'] ?? 0,
-      subject: payload['subject'] ?? payload['subject_name'] ?? '',
+      id: payload['id'] ?? 0,
+      subject: payload['subject'] ?? '',
       teacher: Teacher.fromJson(
-        payload['teacher'] ?? payload['teacher_data'] ?? {},
+        payload['teacher'] is Map ? payload['teacher'] : {},
       ),
     );
   }
@@ -80,9 +79,10 @@ class CreateClassResponse {
 
 class Teacher {
   final int id;
-  final String fullName;
-  final String email;
+  final String? fullName;
+  final String? email;
   final String? password;
+  // ... (omitting fields for brevity in ReplacementContent if allowed, but I'll provide full block)
   final String? resetPasswordToken;
   final String? resetPasswordTokenExpiry;
   final String? createdAt;
@@ -91,8 +91,8 @@ class Teacher {
 
   Teacher({
     required this.id,
-    required this.fullName,
-    required this.email,
+    this.fullName,
+    this.email,
     this.password,
     this.resetPasswordToken,
     this.resetPasswordTokenExpiry,
@@ -104,8 +104,8 @@ class Teacher {
   factory Teacher.fromJson(Map<String, dynamic> json) {
     return Teacher(
       id: json['id'] ?? 0,
-      fullName: json['full_name'] ?? json['fullName'] ?? '',
-      email: json['email'] ?? '',
+      fullName: json['fullName'] ?? json['full_name'] ?? json['name'],
+      email: json['email'],
       password: json['password'],
       resetPasswordToken:
           json['reset_password_token'] ?? json['resetPasswordToken'],

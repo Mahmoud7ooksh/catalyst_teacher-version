@@ -21,7 +21,7 @@ class MyClassesRemoteDataSourceImpl implements MyClassesRemoteDataSource {
       path: EndPoint.createClass,
       data: createClassData.toJson(),
     );
-    return CreateClassResponse.fromJson(response.data);
+    return CreateClassResponse.fromJson(response);
   }
 
   @override

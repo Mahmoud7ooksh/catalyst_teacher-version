@@ -5,6 +5,7 @@ class CreateExamRequestModel {
   final int durationMinutes;
   final int defaultPoints;
   final String examType;
+  final String? closingDate;
   final List<QuestionRequestModel> questions;
 
   CreateExamRequestModel({
@@ -14,6 +15,7 @@ class CreateExamRequestModel {
     required this.durationMinutes,
     required this.defaultPoints,
     required this.examType,
+    this.closingDate,
     required this.questions,
   });
 
@@ -25,6 +27,7 @@ class CreateExamRequestModel {
       'durationMinutes': durationMinutes,
       'defaultPoints': defaultPoints,
       'examType': examType,
+      'closingDate': closingDate,
       'questions': questions.map((q) => q.toJson()).toList(),
     };
   }
@@ -33,16 +36,18 @@ class CreateExamRequestModel {
 class QuestionRequestModel {
   final String text;
   final String type;
-  final List<String> options;
-  final int correctOptionIndex;
+  final List<String>? options;
+  final int? correctOptionIndex;
   final int maxPoints;
+  final String? correctAnswer;
 
   QuestionRequestModel({
     required this.text,
     required this.type,
-    required this.options,
-    required this.correctOptionIndex,
+    this.options,
+    this.correctOptionIndex,
     required this.maxPoints,
+    this.correctAnswer,
   });
 
   Map<String, dynamic> toJson() {
@@ -52,6 +57,7 @@ class QuestionRequestModel {
       'options': options,
       'correctOptionIndex': correctOptionIndex,
       'maxPoints': maxPoints,
+      'correctAnswer': correctAnswer,
     };
   }
 }

@@ -3,7 +3,6 @@ import 'package:catalyst/core/databases/api/dio_service.dart';
 import 'package:catalyst/core/errors/exceptions.dart';
 import 'package:catalyst/features/student%20requests/data/models/student_requests_model.dart';
 import 'package:catalyst/features/student%20requests/data/repos/student_requsets_repo.dart';
-import 'package:catalyst/core/databases/cache/cache_helper.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
@@ -13,10 +12,7 @@ class StudentRequestsRepoImpl implements StudentRequestsRepo {
   @override
   Future<Either<Failure, List<StudentRequest>>> getStudentRequests() async {
     try {
-      final id = await CacheHelper.getData(key: 'userId');
-      final response = await dioService.get(
-        path: '/api/teachers/lessons/$id/join-requests',
-      );
+      final response = await dioService.get(path: EndPoint.pendingRequests);
       List<StudentRequest> studentRequests = [];
       for (var element in response['data']) {
         studentRequests.add(StudentRequest.fromJson(element));
@@ -31,10 +27,19 @@ class StudentRequestsRepoImpl implements StudentRequestsRepo {
   }
 
   @override
-  Future<Either<Failure, String>> approveRequest(String requestId) async {
+  Future<Either<Failure, String>> approveRequest({
+    required String requestId,
+    required int lessonId,
+  }) async {
     try {
       await dioService.post(
-        path: EndPoint.approveRequest + requestId.toString(),
+        path: EndPoint.approveRequest.replaceAll(
+          '{lessonId}',
+          lessonId.toString(),
+        ),
+        data: {
+          "studentLessonIds": [int.parse(requestId)],
+        },
       );
       return right('Request approved');
     } catch (e) {
@@ -46,10 +51,19 @@ class StudentRequestsRepoImpl implements StudentRequestsRepo {
   }
 
   @override
-  Future<Either<Failure, String>> rejectRequest(String requestId) async {
+  Future<Either<Failure, String>> rejectRequest({
+    required String requestId,
+    required int lessonId,
+  }) async {
     try {
       await dioService.post(
-        path: EndPoint.rejectRequest + requestId.toString(),
+        path: EndPoint.rejectRequest.replaceAll(
+          '{lessonId}',
+          lessonId.toString(),
+        ),
+        data: {
+          "studentLessonIds": [int.parse(requestId)],
+        },
       );
       return right('Request rejected');
     } catch (e) {

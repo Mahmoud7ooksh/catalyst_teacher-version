@@ -40,7 +40,7 @@ class DrawerItem extends StatelessWidget {
           leading: Icon(
             icon,
             color: iconColor ?? const Color(0xFF393E46), // 🔹 وردي فوشيا
-            size: 25,
+            size: 30,
           ),
           title: CustomText(
             text: label,
