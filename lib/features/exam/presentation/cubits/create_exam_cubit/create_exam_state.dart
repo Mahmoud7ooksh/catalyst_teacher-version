@@ -26,3 +26,13 @@ class CreateExamSuccess extends CreateExamState {
   final String message;
   CreateExamSuccess(this.message);
 }
+
+class CreateExamInfoSaved extends CreateExamState {
+  final String message;
+  CreateExamInfoSaved(this.message);
+}
+
+class CreateExamFinalSuccess extends CreateExamState {
+  final String message;
+  CreateExamFinalSuccess(this.message);
+}

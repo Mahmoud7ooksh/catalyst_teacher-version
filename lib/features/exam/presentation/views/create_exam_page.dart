@@ -49,7 +49,9 @@ class _CreateExamPageState extends State<CreateExamPage> {
 
     // أول ما الصفحة تفتح اطلب من الكيوبيد يجيب ExamInfo من Hive
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CreateExamCubit>().loadExamInfo();
+      final cubit = context.read<CreateExamCubit>();
+      cubit.reset(); // Reset to clear any previous success states
+      cubit.loadExamInfo();
       context.read<GetMyClassesCubitCubit>().getMyClasses();
     });
   }
@@ -59,7 +61,7 @@ class _CreateExamPageState extends State<CreateExamPage> {
     return BlocConsumer<CreateExamCubit, CreateExamState>(
       listener: (context, state) {
         // لو حفظنا بنجاح ⇒ روح لصفحة الأسئلة
-        if (state is CreateExamSuccess) {
+        if (state is CreateExamInfoSaved) {
           GoRouter.of(context).push(
             Routs.examQuestions,
             extra: int.tryParse(_defaultPointsController.text.trim()),
@@ -70,6 +72,20 @@ class _CreateExamPageState extends State<CreateExamPage> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+
+        if (state is CreateExamFinalSuccess) {
+          _titleController.clear();
+          _descController.clear();
+          _durationController.clear();
+          _marksController.clear();
+          _defaultPointsController.text = '1';
+          _dateTime = null;
+          _closingDate = null;
+          _selectedClass = null;
+          _initialFilled = false;
+          _autoValidateMode = AutovalidateMode.disabled;
+          setState(() {});
         }
       },
       builder: (context, state) {
@@ -83,7 +99,14 @@ class _CreateExamPageState extends State<CreateExamPage> {
           _defaultPointsController.text = info.defaultPoints?.toString() ?? '1';
           _dateTime = info.scheduledAt;
           _closingDate = info.closingDate;
-          if (info.classIds.isNotEmpty && _availableClasses.isNotEmpty) {
+
+          if (info.title == null &&
+              info.description == null &&
+              info.classIds.isEmpty) {
+            // This means it was an empty ExamInfo from Repo (cache miss)
+            // Explicitly reset selection just in case
+            _selectedClass = null;
+          } else if (info.classIds.isNotEmpty && _availableClasses.isNotEmpty) {
             try {
               _selectedClass = _availableClasses.firstWhere(
                 (c) => c.id.toString() == info.classIds.first,
@@ -167,7 +190,11 @@ class _CreateExamPageState extends State<CreateExamPage> {
                                       }
                                     },
                                     builder: (context, state) {
-                                      if (state is GetMyClassesCubitLoading) {
+                                      if (state is GetMyClassesCubitSuccess) {
+                                        _availableClasses = state.response;
+                                      }
+                                      if (state is GetMyClassesCubitLoading &&
+                                          _availableClasses.isEmpty) {
                                         return const Center(
                                           child: SizedBox(
                                             height: 20,
@@ -182,10 +209,16 @@ class _CreateExamPageState extends State<CreateExamPage> {
                                         child: DropdownButtonHideUnderline(
                                           child: DropdownButton<Lesson>(
                                             value:
-                                                _availableClasses.contains(
-                                                  _selectedClass,
+                                                _availableClasses.any(
+                                                  (c) =>
+                                                      c.id ==
+                                                      _selectedClass?.id,
                                                 )
-                                                ? _selectedClass
+                                                ? _availableClasses.firstWhere(
+                                                    (c) =>
+                                                        c.id ==
+                                                        _selectedClass?.id,
+                                                  )
                                                 : null,
                                             hint: const Text('Select Class'),
                                             isExpanded: true,

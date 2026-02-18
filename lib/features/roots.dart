@@ -5,7 +5,6 @@ import 'package:catalyst/core/widgets/base_scaffold.dart';
 
 import 'package:catalyst/features/bubble_liquid_glass_navbar.dart';
 import 'package:catalyst/features/drawer/drawer.dart';
-import 'package:catalyst/features/exam/data/repos/create_exam_repo_impl.dart';
 import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_cubit.dart';
 import 'package:catalyst/features/home/presentation/views/home_view.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/create%20class%20cubit/create_class_cubit.dart';
@@ -55,8 +54,8 @@ class _RootState extends State<Root> {
       ],
       child: const StudentRequestsView(),
     ),
-    BlocProvider(
-      create: (context) => CreateExamCubit(getIt.get<CreateExamRepoImpl>()),
+    BlocProvider.value(
+      value: getIt.get<CreateExamCubit>(),
       child: const CreateExamPage(),
     ),
   ];

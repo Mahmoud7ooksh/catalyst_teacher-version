@@ -3,7 +3,8 @@ import 'package:catalyst/features/student%20requests/presentation/cubits/approve
 import 'package:catalyst/features/student%20requests/presentation/cubits/get%20students%20requests%20cubit/get_students_requests_cubit.dart';
 import 'package:catalyst/features/student%20requests/presentation/cubits/get%20students%20requests%20cubit/get_students_requests_state.dart';
 import 'package:flutter/material.dart';
-import 'package:catalyst/features/student requests/presentation/widgets/student_request_item.dart';
+import 'package:catalyst/features/student%20requests/presentation/widgets/student_request_item.dart';
+import 'package:catalyst/core/widgets/empty_state_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StudentRequestsView extends StatefulWidget {
@@ -59,7 +60,12 @@ class _StudentRequestsViewState extends State<StudentRequestsView> {
             if (state is GetStudentsRequestsSuccess) {
               final requests = state.studentRequests;
               if (requests.isEmpty) {
-                return const Center(child: Text("No pending requests"));
+                return const EmptyStateWidget(
+                  icon: Icons.inbox_outlined,
+                  title: "No requests found",
+                  description:
+                      "the new requests will appear here when they arrive",
+                );
               }
               return ListView.builder(
                 padding: const EdgeInsets.all(16),

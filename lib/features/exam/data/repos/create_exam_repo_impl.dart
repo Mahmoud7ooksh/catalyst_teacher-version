@@ -97,7 +97,7 @@ class CreateExamRepoImpl implements CreateExamRepo {
       if (examInfo != null) {
         return Right(examInfo);
       }
-      return Left(CacheFailure('No exam info found'));
+      return Right(ExamInfo());
     } catch (e) {
       return Left(CacheFailure.fromException(e));
     }

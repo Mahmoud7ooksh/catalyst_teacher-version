@@ -7,12 +7,21 @@ class GetMyClassesCubitCubit extends Cubit<GetMyClassesCubitState> {
     : super(GetMyClassesCubitInitial());
   final MyClassesRepoImpl myClassesRepoImpl;
 
-  Future<void> getMyClasses() async {
+  Future<void> getMyClasses({bool forceRefresh = false}) async {
+    if (!forceRefresh && state is GetMyClassesCubitSuccess) {
+      return;
+    }
     emit(GetMyClassesCubitLoading());
     final result = await myClassesRepoImpl.getMyClasses();
     result.fold(
-      (failure) => emit(GetMyClassesCubitError(message: failure.errMessage)),
-      (response) => emit(GetMyClassesCubitSuccess(response: response)),
+      (failure) {
+        if (!isClosed) {
+          emit(GetMyClassesCubitError(message: failure.errMessage));
+        }
+      },
+      (response) {
+        if (!isClosed) emit(GetMyClassesCubitSuccess(response: response));
+      },
     );
   }
 }

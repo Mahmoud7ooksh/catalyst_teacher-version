@@ -11,6 +11,10 @@ class CreateExamCubit extends Cubit<CreateExamState> {
 
   CreateExamCubit(this._repo) : super(CreateExamInitial());
 
+  void reset() {
+    emit(CreateExamInitial());
+  }
+
   // ===================== Load Questions =====================
   Future<void> loadQuestions() async {
     emit(CreateExamLoading());
@@ -40,7 +44,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
 
     result.fold(
       (failure) => emit(CreateExamError(failure.errMessage)),
-      (_) => emit(CreateExamSuccess("Exam info saved")),
+      (_) => emit(CreateExamInfoSaved("Exam info saved")),
     );
   }
 
@@ -170,7 +174,7 @@ class CreateExamCubit extends Cubit<CreateExamState> {
       // 5. Clear Local Data on Success
       await _repo.clearExamInfo();
       await _repo.clearQuestions();
-      emit(CreateExamSuccess(message));
+      emit(CreateExamFinalSuccess(message));
     });
   }
 
