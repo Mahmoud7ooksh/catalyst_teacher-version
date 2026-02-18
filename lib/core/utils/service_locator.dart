@@ -19,6 +19,7 @@ import 'package:catalyst/features/student requests/presentation/cubits/approve r
 // ===== create exam =====
 import 'package:catalyst/features/exam/data/data_source/local_data_source/create_exam_local_data_source.dart';
 import 'package:catalyst/features/exam/data/repos/create_exam_repo_impl.dart';
+import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -74,5 +75,10 @@ void setupServiceLocator() {
       getIt.get<CreateExamLocalDataSource>(),
       getIt.get<DioService>(),
     ),
+  );
+
+  // Cubit
+  getIt.registerLazySingleton<CreateExamCubit>(
+    () => CreateExamCubit(getIt.get<CreateExamRepoImpl>()),
   );
 }

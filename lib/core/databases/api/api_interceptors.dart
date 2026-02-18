@@ -33,6 +33,9 @@ class ApiInterceptors extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    print('DEBUG: ====================== ERROR ======================');
+    print('DEBUG: Error path: ${err.requestOptions.path}');
+    print('DEBUG: Status code: ${err.response?.statusCode}');
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
       final options = err.requestOptions;
 
@@ -85,9 +88,10 @@ class ApiInterceptors extends Interceptor {
 
   Future<bool> _refreshToken() async {
     final refreshToken = await CacheHelper.getData(key: 'refreshToken');
-    print('DEBUG: _refreshToken called. Current RefreshToken: $refreshToken');
+    print('DEBUG: _refreshToken process started');
+    print('DEBUG: [RefreshToken] found in cache: $refreshToken');
     if (refreshToken == null) {
-      print('DEBUG: No refresh token found in cache.');
+      print('DEBUG: No [RefreshToken] found. Cannot refresh.');
       return false;
     }
 
@@ -108,7 +112,9 @@ class ApiInterceptors extends Interceptor {
         final newRefreshToken = data['refreshToken'];
 
         if (newAccessToken != null && newRefreshToken != null) {
-          print('DEBUG: Refresh successful. Saving new tokens.');
+          print('DEBUG: Refresh SUCCESS! Saving new tokens.');
+          print('DEBUG: New [AccessToken]: $newAccessToken');
+          print('DEBUG: New [RefreshToken]: $newRefreshToken');
           await CacheHelper.saveData(key: 'token', value: newAccessToken);
           await CacheHelper.saveData(
             key: 'refreshToken',
@@ -116,7 +122,7 @@ class ApiInterceptors extends Interceptor {
           );
           return true;
         } else {
-          print('DEBUG: New tokens are null in response data.');
+          print('DEBUG: FAILED to refresh - Tokens are null in response data.');
         }
       }
       return false;
@@ -133,9 +139,8 @@ class ApiInterceptors extends Interceptor {
   Future<Response> _retryRequest(RequestOptions requestOptions) async {
     final dio = Dio(BaseOptions(baseUrl: EndPoint.baseUrl));
     final token = await CacheHelper.getData(key: 'token');
-    print(
-      'DEBUG: Retrying request: ${requestOptions.path} with new token: $token',
-    );
+    print('DEBUG: RETRYING request: ${requestOptions.path}');
+    print('DEBUG: Using NEW [AccessToken]: $token');
 
     final options = Options(
       method: requestOptions.method,

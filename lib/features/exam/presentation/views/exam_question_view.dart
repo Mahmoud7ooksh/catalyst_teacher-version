@@ -32,7 +32,7 @@ class _ExamQuestionsPageState extends State<ExamQuestionsPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<CreateExamCubit, CreateExamState>(
       listener: (context, state) {
-        if (state is CreateExamSuccess) {
+        if (state is CreateExamFinalSuccess) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));

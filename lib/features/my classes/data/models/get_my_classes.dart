@@ -60,6 +60,15 @@ class Lesson {
     'teacher': teacher?.toJson(),
     'lessonSchedules': lessonSchedules,
   };
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Lesson && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class Teacher {
@@ -73,4 +82,13 @@ class Teacher {
   }
 
   Map<String, dynamic> toJson() => {'id': id, 'fullName': fullName};
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Teacher && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

@@ -131,7 +131,7 @@ class _CreateClassDialogState extends State<CreateClassDialog> {
                   Navigator.pop(context);
                   cubit.subjectController.clear();
                   cubit.lessonSchedules.clear();
-                  getMyClassesCubit.getMyClasses();
+                  getMyClassesCubit.getMyClasses(forceRefresh: true);
                 }
               },
               builder: (context, state) {
@@ -156,10 +156,6 @@ class _CreateClassDialogState extends State<CreateClassDialog> {
                     ElevatedButton(
                       onPressed: () async {
                         await cubit.createClass();
-                        Navigator.pop(context);
-                        cubit.subjectController.clear();
-                        cubit.lessonSchedules.clear();
-                        getMyClassesCubit.getMyClasses();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.color1,

@@ -11,7 +11,6 @@ import 'package:catalyst/features/auth/presentation/views/send_email_view.dart';
 import 'package:catalyst/features/auth/presentation/views/login_view.dart';
 import 'package:catalyst/features/auth/presentation/views/register_view.dart';
 import 'package:catalyst/features/auto%20grade/presentation/views/auto_grade_view.dart';
-import 'package:catalyst/features/exam/data/repos/create_exam_repo_impl.dart';
 import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_cubit.dart';
 import 'package:catalyst/features/exam/presentation/views/exam_question_view.dart';
 import 'package:catalyst/features/home/presentation/views/home_view.dart';
@@ -111,9 +110,7 @@ class Routs {
         path: students,
         builder: (context, state) => MultiBlocProvider(
           providers: [
-            BlocProvider(
-              create: (_) => CreateExamCubit(getIt.get<CreateExamRepoImpl>()),
-            ),
+            BlocProvider.value(value: getIt.get<CreateExamCubit>()),
             BlocProvider(
               create: (_) =>
                   GetMyClassesCubitCubit(getIt.get<MyClassesRepoImpl>()),
@@ -124,8 +121,8 @@ class Routs {
       ),
       GoRoute(
         path: examQuestions,
-        builder: (context, state) => BlocProvider(
-          create: (_) => CreateExamCubit(getIt<CreateExamRepoImpl>()),
+        builder: (context, state) => BlocProvider.value(
+          value: getIt.get<CreateExamCubit>(),
           child: ExamQuestionsPage(defaultPoints: state.extra as int?),
         ),
       ),
