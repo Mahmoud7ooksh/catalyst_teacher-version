@@ -4,17 +4,21 @@ import 'package:flutter/material.dart';
 
 class McqOptionsSection extends StatefulWidget {
   final List<TextEditingController> controllers;
+  final List<int> correctIndices;
   final Function(String?) onOptionsChanged;
   final VoidCallback onAddOption;
   final Function(int) onRemoveOption;
+  final Function(int) onToggleCorrect;
   final String? errorText;
 
   const McqOptionsSection({
     super.key,
     required this.controllers,
+    required this.correctIndices,
     required this.onOptionsChanged,
     required this.onAddOption,
     required this.onRemoveOption,
+    required this.onToggleCorrect,
     this.errorText,
   });
 
@@ -44,6 +48,11 @@ class _McqOptionsSectionState extends State<McqOptionsSection> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
+                  Checkbox(
+                    value: widget.correctIndices.contains(index),
+                    onChanged: (_) => widget.onToggleCorrect(index),
+                    activeColor: Colors.green,
+                  ),
                   Expanded(
                     child: CustomTextformfield(
                       controller: widget.controllers[index],

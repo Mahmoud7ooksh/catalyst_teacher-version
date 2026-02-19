@@ -84,7 +84,8 @@ class ClassItem extends StatelessWidget {
             const SizedBox(height: 18),
             CustomButton(
               text: 'View Details',
-              onPressed: () => GoRouter.of(context).push(Routs.studentsInClass),
+              onPressed: () =>
+                  GoRouter.of(context).push(Routs.classExams, extra: item.id),
             ),
           ],
         ),

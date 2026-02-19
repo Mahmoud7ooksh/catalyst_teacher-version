@@ -37,7 +37,7 @@ class QuestionRequestModel {
   final String text;
   final String type;
   final List<String>? options;
-  final int? correctOptionIndex;
+  final List<int>? correctOptionIndex;
   final int maxPoints;
   final String? correctAnswer;
 

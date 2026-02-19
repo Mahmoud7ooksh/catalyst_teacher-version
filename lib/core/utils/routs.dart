@@ -11,13 +11,18 @@ import 'package:catalyst/features/auth/presentation/views/send_email_view.dart';
 import 'package:catalyst/features/auth/presentation/views/login_view.dart';
 import 'package:catalyst/features/auth/presentation/views/register_view.dart';
 import 'package:catalyst/features/auto%20grade/presentation/views/auto_grade_view.dart';
+import 'package:catalyst/features/my%20classes/data/models/exam_review_models.dart';
+import 'package:catalyst/features/my%20classes/presentation/views/class_exams_view.dart';
+import 'package:catalyst/features/my%20classes/presentation/views/exam_students_view.dart';
+import 'package:catalyst/features/my%20classes/presentation/views/student_review_view.dart';
+import 'package:catalyst/features/my%20classes/presentation/cubits/teacher_exams_cubit/teacher_exams_cubit.dart';
+import 'package:catalyst/features/my%20classes/presentation/cubits/exam_details_cubit/exam_details_cubit.dart';
 import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_cubit.dart';
 import 'package:catalyst/features/exam/presentation/views/exam_question_view.dart';
 import 'package:catalyst/features/home/presentation/views/home_view.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/create%20class%20cubit/create_class_cubit.dart';
 import 'package:catalyst/features/my%20classes/data/repos/my_classes_repo_impl.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/get%20my%20classes%20cubit/get_my_classes_cubit_cubit.dart';
-import 'package:catalyst/features/my%20classes/presentation/views/students_in_class.dart';
 import 'package:catalyst/features/roots.dart';
 import 'package:catalyst/features/splash/splash_view.dart';
 import 'package:catalyst/features/student%20requests/data/repos/student_requests_repo_impl.dart';
@@ -46,6 +51,9 @@ class Routs {
   static const String myClasses = '/myClasses';
   static const String studentsInClass = '/studentsInClass';
   static const String examQuestions = '/examQuestions';
+  static const String examStudents = '/examStudents';
+  static const String studentReview = '/studentReview';
+  static const String classExams = '/classExams';
   static const String emailVerification = '/emailVerification';
   static const String emailVerified = '/emailVerified';
 
@@ -163,8 +171,24 @@ class Routs {
         ),
       ),
       GoRoute(
-        path: studentsInClass,
-        builder: (context, state) => const ClassStudentsView(),
+        path: classExams,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt.get<TeacherExamsCubit>(),
+          child: ClassExamsView(lessonId: state.extra as int),
+        ),
+      ),
+      GoRoute(
+        path: examStudents,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt.get<ExamDetailsCubit>(),
+          child: ExamStudentsView(examId: state.extra as int),
+        ),
+      ),
+      GoRoute(
+        path: studentReview,
+        builder: (context, state) => StudentReviewView(
+          submission: state.extra as StudentSubmissionPreview,
+        ),
       ),
     ],
   );

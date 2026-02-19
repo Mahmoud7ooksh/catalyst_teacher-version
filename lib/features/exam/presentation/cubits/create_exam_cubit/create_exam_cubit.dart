@@ -149,7 +149,11 @@ class CreateExamCubit extends Cubit<CreateExamState> {
           type: _mapQuestionType(q.type),
           options: isMcq ? (q.options ?? []) : null,
           correctOptionIndex: isMcq
-              ? (q.options?.indexOf(q.answer) ?? 0)
+              ? q.answer
+                    .split(',')
+                    .where((s) => s.isNotEmpty)
+                    .map((e) => int.parse(e))
+                    .toList()
               : null,
           maxPoints: q.points ?? 1,
           correctAnswer: isMcq ? null : q.answer,

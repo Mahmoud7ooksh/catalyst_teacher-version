@@ -8,4 +8,7 @@ abstract class MyClassesRepo {
     CreateClassRequest createClassData,
   );
   Future<Either<Failure, List<Lesson>>> getMyClasses();
+  Future<Either<Failure, void>> allExams(String classId);
+  Future<Either<Failure, void>> allStudentsInExam(String examId);
+  Future<Either<Failure, void>> allStudentsInClass(String classId);
 }

@@ -33,6 +33,7 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
   final TextEditingController _answerController = TextEditingController();
   final TextEditingController _pointsController = TextEditingController();
   QuestionType _selectedType = QuestionType.mcq;
+  List<int> _selectedIndices = [];
 
   final List<TextEditingController> _optionControllers = [
     TextEditingController(),
@@ -52,6 +53,16 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
       _answerController.text = q.answer;
       _pointsController.text = q.points.toString();
       _selectedType = q.type;
+
+      if (_selectedType == QuestionType.mcq) {
+        if (q.answer.isNotEmpty) {
+          _selectedIndices = q.answer
+              .split(',')
+              .where((s) => s.isNotEmpty)
+              .map((s) => int.parse(s))
+              .toList();
+        }
+      }
 
       _optionControllers.clear();
 
@@ -176,6 +187,7 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
                           _selectedType = v;
                           _optionsError = null;
                           _answerExtraError = null;
+                          _selectedIndices.clear();
 
                           // ensure controllers exist for mcq
                           if (_selectedType == QuestionType.mcq &&
@@ -193,7 +205,18 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
                     if (_selectedType == QuestionType.mcq)
                       McqOptionsSection(
                         controllers: _optionControllers,
+                        correctIndices: _selectedIndices,
                         errorText: _optionsError,
+                        onToggleCorrect: (index) {
+                          setState(() {
+                            if (_selectedIndices.contains(index)) {
+                              _selectedIndices.remove(index);
+                            } else {
+                              _selectedIndices.add(index);
+                            }
+                            _answerExtraError = null;
+                          });
+                        },
                         onAddOption: () {
                           setState(() {
                             _optionControllers.add(TextEditingController());
@@ -231,34 +254,18 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
               ),
               const SizedBox(height: 20),
 
-              // Answer
-              CustomTextformfield(
-                hintText: "Answer",
-                controller: _answerController,
-                validator: (value) {
-                  if (_selectedType == QuestionType.trueFalse) {
-                    return Validation.validateTrueFalseAnswer(value);
-                  }
-                  return Validation.validateAnswer(value);
-                },
-                onChanged: (_) {
-                  if (_selectedType == QuestionType.mcq) {
-                    setState(() {
-                      final options = _optionControllers
-                          .map((c) => c.text.trim())
-                          .toList();
-                      _answerExtraError = Validation.validateMcqAnswer(
-                        _answerController.text,
-                        options,
-                      );
-                    });
-                  } else {
-                    setState(() {
-                      _answerExtraError = null;
-                    });
-                  }
-                },
-              ),
+              // Answer (Hidden for MCQ as it uses the switches)
+              if (_selectedType != QuestionType.mcq)
+                CustomTextformfield(
+                  hintText: "Answer",
+                  controller: _answerController,
+                  validator: (value) {
+                    if (_selectedType == QuestionType.trueFalse) {
+                      return Validation.validateTrueFalseAnswer(value);
+                    }
+                    return Validation.validateAnswer(value);
+                  },
+                ),
               if (_answerExtraError != null) ...[
                 const SizedBox(height: 4),
                 Align(
@@ -321,12 +328,18 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
     if (_selectedType == QuestionType.mcq) {
       final optError = Validation.validateMcqOptions(_optionControllers);
       final optList = _optionControllers.map((c) => c.text.trim()).toList();
-      final ansError = Validation.validateMcqAnswer(aText, optList);
 
-      if (optError != null || ansError != null) {
+      if (optError != null) {
         setState(() {
           _optionsError = optError;
-          _answerExtraError = ansError;
+          _autoValidate = AutovalidateMode.always;
+        });
+        return;
+      }
+
+      if (_selectedIndices.isEmpty) {
+        setState(() {
+          _answerExtraError = "Please select at least one correct answer";
           _autoValidate = AutovalidateMode.always;
         });
         return;
@@ -341,7 +354,9 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
           DateTime.now().millisecondsSinceEpoch.toString(),
       text: qText,
       type: _selectedType,
-      answer: aText,
+      answer: _selectedType == QuestionType.mcq
+          ? _selectedIndices.join(',')
+          : aText,
       options: options,
       points: int.tryParse(_pointsController.text) ?? 1,
     );

@@ -42,4 +42,22 @@ class MyClassesRepoImpl implements MyClassesRepo {
       return left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> allExams(String classId) {
+    // TODO: implement allExams
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, void>> allStudentsInClass(String classId) {
+    // TODO: implement allStudentsInClass
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, void>> allStudentsInExam(String examId) {
+    // TODO: implement allStudentsInExam
+    throw UnimplementedError();
+  }
 }

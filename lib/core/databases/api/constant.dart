@@ -15,6 +15,8 @@ class EndPoint {
   static final String rejectRequest = dotenv.env['REJECT_REQUEST']!;
   static final String allStudentsInClass = dotenv.env['ALL_STUDENTS_IN_CLASS']!;
   static final String createExam = dotenv.env['CREATE_EXAM']!;
+  static final String lessonExams = dotenv.env['LESSON_EXAMS']!;
+  static final String examDetails = dotenv.env['EXAM_DETAILS']!;
   static final String refreshToken = dotenv.env['REFRESH_TOKEN_ENDPOINT']!;
 }
 
