@@ -3,8 +3,11 @@
 import 'package:catalyst/core/databases/api/dio_service.dart';
 import 'package:catalyst/features/my%20classes/data/data_source/remote_data_source.dart';
 import 'package:catalyst/features/my%20classes/data/data_sources/exam_details_remote_data_source.dart';
+import 'package:catalyst/features/my%20classes/data/data_sources/student_review_remote_data_source.dart';
 import 'package:catalyst/features/my%20classes/data/repos/exam_details_repo_impl.dart';
+import 'package:catalyst/features/my%20classes/data/repos/student_review_repo_impl.dart';
 import 'package:catalyst/features/my%20classes/presentation/cubits/exam_details_cubit/exam_details_cubit.dart';
+import 'package:catalyst/features/my%20classes/presentation/cubits/student_review_cubit/student_review_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 
@@ -117,5 +120,20 @@ void setupServiceLocator() {
 
   getIt.registerFactory<ExamDetailsCubit>(
     () => ExamDetailsCubit(getIt<ExamDetailsRepoImpl>()),
+  );
+
+  // ========== STUDENT REVIEW ==========
+  getIt.registerLazySingleton<StudentReviewRemoteDataSource>(
+    () => StudentReviewRemoteDataSourceImpl(dioService: getIt<DioService>()),
+  );
+
+  getIt.registerLazySingleton<StudentReviewRepoImpl>(
+    () => StudentReviewRepoImpl(
+      remoteDataSource: getIt<StudentReviewRemoteDataSource>(),
+    ),
+  );
+
+  getIt.registerFactory<StudentReviewCubit>(
+    () => StudentReviewCubit(getIt<StudentReviewRepoImpl>()),
   );
 }

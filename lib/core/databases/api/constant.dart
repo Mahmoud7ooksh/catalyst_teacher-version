@@ -18,6 +18,7 @@ class EndPoint {
   static final String lessonExams = dotenv.env['LESSON_EXAMS']!;
   static final String examDetails = dotenv.env['EXAM_DETAILS']!;
   static final String refreshToken = dotenv.env['REFRESH_TOKEN_ENDPOINT']!;
+  static final String studentExamAnswers = dotenv.env['STUDENT_EXAM_ANSWERS']!;
 }
 
 // ===== postman api key used in the request =====

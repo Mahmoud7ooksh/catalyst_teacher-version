@@ -5,6 +5,7 @@ import 'package:catalyst/features/my%20classes/presentation/cubits/exam_details_
 import 'package:catalyst/features/my%20classes/presentation/widgets/student_exam_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:catalyst/core/utils/routs.dart';
 import 'package:go_router/go_router.dart';
 
 class ExamStudentsView extends StatefulWidget {
@@ -62,8 +63,10 @@ class _ExamStudentsViewState extends State<ExamStudentsView> {
                 return StudentExamCard(
                   studentGrade: students[index],
                   onTap: () {
-                    // Navigate to student review (next step implementation)
-                    // context.push(Routs.studentReview, extra: students[index]);
+                    context.push(
+                      Routs.studentReview,
+                      extra: students[index].id,
+                    );
                   },
                 );
               },

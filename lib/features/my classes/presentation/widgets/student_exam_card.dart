@@ -15,52 +15,90 @@ class StudentExamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: Colors.grey.shade100),
+      ),
+      child: InkWell(
         onTap: onTap,
-        title: CustomText(
-          text: studentGrade.studentName ?? 'Anonymous Student',
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            CustomText(
-              text: studentGrade.grade != null
-                  ? 'Grade: ${studentGrade.grade}'
-                  : 'Grade: Pending',
-              fontSize: 14,
-              color: studentGrade.grade != null
-                  ? AppColors.color1
-                  : Colors.orange,
-              fontWeight: FontWeight.w600,
-            ),
-          ],
-        ),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: studentGrade.verified
-                ? Colors.green.withOpacity(0.1)
-                : Colors.grey.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: studentGrade.verified ? Colors.green : Colors.grey,
-            ),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: AppColors.color1.withOpacity(0.1),
+                child: CustomText(
+                  text:
+                      studentGrade.studentName?.substring(0, 1).toUpperCase() ??
+                      'S',
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.color1,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: studentGrade.studentName ?? 'Anonymous Student',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        _buildStatusBadge(),
+                        const SizedBox(width: 8),
+                        if (studentGrade.grade != null)
+                          CustomText(
+                            text: 'Grade: ${studentGrade.grade}',
+                            fontSize: 13,
+                            color: AppColors.color1,
+                            fontWeight: FontWeight.w600,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+            ],
           ),
-          child: CustomText(
-            text: studentGrade.verified ? 'Verified' : 'Unverified',
-            fontSize: 12,
-            color: studentGrade.verified ? Colors.green : Colors.grey,
-            fontWeight: FontWeight.w600,
-          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge() {
+    final bool isVerified = studentGrade.verified;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: (isVerified ? Colors.green : Colors.orange).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: (isVerified ? Colors.green : Colors.orange).withOpacity(0.5),
+        ),
+      ),
+      child: CustomText(
+        text: isVerified ? 'Verified' : 'Pending',
+        fontSize: 10,
+        color: isVerified ? Colors.green.shade700 : Colors.orange.shade800,
+        fontWeight: FontWeight.bold,
       ),
     );
   }

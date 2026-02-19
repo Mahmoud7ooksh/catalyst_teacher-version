@@ -11,7 +11,7 @@ import 'package:catalyst/features/auth/presentation/views/send_email_view.dart';
 import 'package:catalyst/features/auth/presentation/views/login_view.dart';
 import 'package:catalyst/features/auth/presentation/views/register_view.dart';
 import 'package:catalyst/features/auto%20grade/presentation/views/auto_grade_view.dart';
-import 'package:catalyst/features/my%20classes/data/models/exam_review_models.dart';
+import 'package:catalyst/features/my%20classes/presentation/cubits/student_review_cubit/student_review_cubit.dart';
 import 'package:catalyst/features/my%20classes/presentation/views/class_exams_view.dart';
 import 'package:catalyst/features/my%20classes/presentation/views/exam_students_view.dart';
 import 'package:catalyst/features/my%20classes/presentation/views/student_review_view.dart';
@@ -186,8 +186,9 @@ class Routs {
       ),
       GoRoute(
         path: studentReview,
-        builder: (context, state) => StudentReviewView(
-          submission: state.extra as StudentSubmissionPreview,
+        builder: (context, state) => BlocProvider(
+          create: (context) => getIt.get<StudentReviewCubit>(),
+          child: StudentReviewView(studentExamId: state.extra as int),
         ),
       ),
     ],
