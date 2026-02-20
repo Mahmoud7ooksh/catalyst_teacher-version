@@ -22,11 +22,13 @@ class StudentExamAnswersDataModel {
   final String? studentName;
   final double? totalGrade;
   final List<StudentAnswerModel> answers;
+  final bool? completed;
 
   StudentExamAnswersDataModel({
     this.studentName,
     this.totalGrade,
     required this.answers,
+    this.completed,
   });
 
   factory StudentExamAnswersDataModel.fromJson(Map<String, dynamic> json) {
@@ -38,17 +40,20 @@ class StudentExamAnswersDataModel {
       answers: (json['answers'] as List)
           .map((i) => StudentAnswerModel.fromJson(i))
           .toList(),
+      completed: json['completed'],
     );
   }
 }
 
 class StudentAnswerModel {
+  final int id;
   final QuestionDataModel question;
   final List<int>? selectedOptions;
   final String? textAnswer;
   final double? mark;
 
   StudentAnswerModel({
+    required this.id,
     required this.question,
     this.selectedOptions,
     this.textAnswer,
@@ -57,11 +62,10 @@ class StudentAnswerModel {
 
   factory StudentAnswerModel.fromJson(Map<String, dynamic> json) {
     return StudentAnswerModel(
+      id: json['id'],
       question: QuestionDataModel.fromJson(json['question']),
       selectedOptions: json['selectedOptions'] != null
-          ? List<int>.from(
-              json['selectedOptions'].map((e) => (e as num).toInt()),
-            )
+          ? List<int>.from(json['selectedOptions'])
           : null,
       textAnswer: json['textAnswer'],
       mark: json['mark'] != null ? (json['mark'] as num).toDouble() : null,

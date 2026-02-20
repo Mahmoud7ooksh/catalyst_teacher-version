@@ -2,15 +2,18 @@ class StudentExamReviewEntity {
   final String? studentName;
   final double? totalGrade;
   final List<StudentAnswerReviewEntity> answers;
+  final bool completed;
 
   StudentExamReviewEntity({
     this.studentName,
     this.totalGrade,
     required this.answers,
+    required this.completed,
   });
 }
 
 class StudentAnswerReviewEntity {
+  final int answerId;
   final int questionId;
   final String questionText;
   final String questionType;
@@ -23,6 +26,7 @@ class StudentAnswerReviewEntity {
   final double? aiMark;
 
   StudentAnswerReviewEntity({
+    required this.answerId,
     required this.questionId,
     required this.questionText,
     required this.questionType,

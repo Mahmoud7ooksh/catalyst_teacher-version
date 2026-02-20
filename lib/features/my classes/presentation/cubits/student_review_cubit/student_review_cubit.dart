@@ -19,11 +19,20 @@ class StudentReviewCubit extends Cubit<StudentReviewState> {
     });
   }
 
-  void updateMark(int questionId, double mark) {
+  void updateMark(int answerId, double mark) {
     if (state is StudentReviewSuccess) {
       final successState = state as StudentReviewSuccess;
-      _editedMarks[questionId] = mark;
+      _editedMarks[answerId] = mark;
       emit(StudentReviewSuccess(successState.review, Map.from(_editedMarks)));
     }
+  }
+
+  Future<void> verifyStudentExam(int studentExamId) async {
+    emit(StudentReviewVerifying());
+    final result = await repo.verifyStudentExam(studentExamId, _editedMarks);
+    result.fold(
+      (failure) => emit(StudentReviewVerifyError(failure.errMessage)),
+      (verifiedExam) => emit(StudentReviewVerified(verifiedExam)),
+    );
   }
 }

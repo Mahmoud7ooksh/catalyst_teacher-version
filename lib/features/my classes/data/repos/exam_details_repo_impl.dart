@@ -25,11 +25,26 @@ class ExamDetailsRepoImpl implements ExamDetailsRepo {
     }
   }
 
+  @override
+  Future<Either<Failure, Unit>> completeExam(int examId) async {
+    try {
+      await remoteDataSource.completeExam(examId);
+      return right(unit);
+    } catch (e) {
+      if (e is DioException) {
+        return left(ServerFailure.fromDioError(e));
+      }
+      return left(ServerFailure(e.toString()));
+    }
+  }
+
   ExamDetailsEntity _mapModelToEntity(ExamDetailsDataModel model) {
     return ExamDetailsEntity(
       id: model.id,
       examName: model.examName,
       maxGrade: model.maxGrade,
+      closingDate: model.closingDate,
+      completed: model.completed ?? false,
       students: model.studentGrads
           .map((s) => _mapStudentModelToEntity(s))
           .toList(),

@@ -8,11 +8,13 @@ class CustomButton extends StatelessWidget {
     required this.text,
     this.onPressed,
     this.backgroundColor,
+    this.child,
   });
 
   final String text;
   final VoidCallback? onPressed;
   final Color? backgroundColor;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +31,15 @@ class CustomButton extends StatelessWidget {
           ),
           elevation: 0,
         ),
-        child: CustomText(
-          text: text,
-          fontSize: 16,
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 1.2,
-        ),
+        child:
+            child ??
+            CustomText(
+              text: text,
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+            ),
       ),
     );
   }

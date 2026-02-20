@@ -4,6 +4,7 @@ import 'package:catalyst/features/my%20classes/data/models/exam_details_model.da
 
 abstract class ExamDetailsRemoteDataSource {
   Future<ExamDetailsDataModel> getExamDetails(int examId);
+  Future<Map<String, dynamic>> completeExam(int examId);
 }
 
 class ExamDetailsRemoteDataSourceImpl implements ExamDetailsRemoteDataSource {
@@ -20,5 +21,13 @@ class ExamDetailsRemoteDataSourceImpl implements ExamDetailsRemoteDataSource {
     final ExamDetailsResponseModel responseModel =
         ExamDetailsResponseModel.fromJson(response);
     return responseModel.data;
+  }
+
+  @override
+  Future<Map<String, dynamic>> completeExam(int examId) async {
+    final response = await dioService.post(
+      path: EndPoint.completeExam.replaceFirst('{examId}', examId.toString()),
+    );
+    return response;
   }
 }

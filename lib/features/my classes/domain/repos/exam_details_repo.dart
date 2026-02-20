@@ -4,4 +4,5 @@ import 'package:dartz/dartz.dart';
 
 abstract class ExamDetailsRepo {
   Future<Either<Failure, ExamDetailsEntity>> getExamDetails(int examId);
+  Future<Either<Failure, Unit>> completeExam(int examId);
 }

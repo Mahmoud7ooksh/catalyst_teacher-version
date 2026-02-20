@@ -29,6 +29,7 @@ class ExamDetailsDataModel {
   final String examType;
   final List<QuestionModel> questions;
   final List<StudentGradeModel> studentGrads;
+  final bool? completed;
 
   ExamDetailsDataModel({
     required this.id,
@@ -41,6 +42,7 @@ class ExamDetailsDataModel {
     required this.examType,
     required this.questions,
     required this.studentGrads,
+    this.completed,
   });
 
   factory ExamDetailsDataModel.fromJson(Map<String, dynamic> json) {
@@ -59,6 +61,7 @@ class ExamDetailsDataModel {
       studentGrads: (json['studentGrads'] as List)
           .map((i) => StudentGradeModel.fromJson(i))
           .toList(),
+      completed: json['completed'],
     );
   }
 }
