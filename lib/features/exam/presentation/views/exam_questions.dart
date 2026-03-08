@@ -14,6 +14,7 @@ class ExamQuestionsView extends StatelessWidget {
     required this.onQuestionDeleted,
     required this.onQuestionEditRequested,
     required this.onCreateExam,
+    required this.examId,
   });
 
   /// الأسئلة اللي جايه من الـ Cubit / ViewModel
@@ -31,6 +32,8 @@ class ExamQuestionsView extends StatelessWidget {
   /// لما يضغط "Create Exam"
   final VoidCallback onCreateExam;
 
+  final String examId;
+
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
@@ -47,7 +50,10 @@ class ExamQuestionsView extends StatelessWidget {
           child: Column(
             children: [
               // 1) ويدجت إضافة سؤال
-              AddQuestionSection(onQuestionAdded: onQuestionAdded),
+              AddQuestionSection(
+                onQuestionAdded: onQuestionAdded,
+                examId: examId,
+              ),
 
               const SizedBox(height: 16),
 

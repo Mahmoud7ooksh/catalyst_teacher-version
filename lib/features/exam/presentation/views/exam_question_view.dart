@@ -18,6 +18,7 @@ class ExamQuestionsPage extends StatefulWidget {
 
 class _ExamQuestionsPageState extends State<ExamQuestionsPage> {
   List<Question> _questions = [];
+  String _examId = '';
 
   @override
   void initState() {
@@ -25,6 +26,7 @@ class _ExamQuestionsPageState extends State<ExamQuestionsPage> {
     // أول ما الصفحة تفتح → هات الأسئلة من Hive
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CreateExamCubit>().loadQuestions();
+      context.read<CreateExamCubit>().loadExamInfo();
     });
   }
 
@@ -45,6 +47,11 @@ class _ExamQuestionsPageState extends State<ExamQuestionsPage> {
 
         if (state is CreateExamQuestionsLoaded) {
           _questions = state.questions;
+        } else if (state is CreateExamInfoLoaded) {
+          // Store examId for AI generation
+          if (state.examInfo.classIds.isNotEmpty) {
+            _examId = state.examInfo.classIds.first;
+          }
         }
       },
       builder: (context, state) {
@@ -57,6 +64,7 @@ class _ExamQuestionsPageState extends State<ExamQuestionsPage> {
           children: [
             ExamQuestionsView(
               questions: _questions,
+              examId: _examId,
 
               onQuestionAdded: (q) {
                 context.read<CreateExamCubit>().addQuestion(q);

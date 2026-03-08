@@ -191,4 +191,20 @@ class CreateExamCubit extends Cubit<CreateExamState> {
         return 'WRITING';
     }
   }
+
+  // ===================== Generate Questions with AI =====================
+  Future<void> generateQuestionsWithAI({
+    required String examId,
+    required String userMessage,
+  }) async {
+    emit(GenerateAIQuestionsLoading());
+    final result = await _repo.generateQuestionsWithAI(
+      examId: examId,
+      userMessage: userMessage,
+    );
+    result.fold(
+      (failure) => emit(CreateExamError(failure.errMessage)),
+      (questions) => emit(GenerateAIQuestionsSuccess(questions)),
+    );
+  }
 }

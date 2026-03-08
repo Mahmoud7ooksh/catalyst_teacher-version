@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:catalyst/core/utils/app_colors.dart';
 import 'package:catalyst/core/widgets/custom_text.dart';
 import 'package:catalyst/features/exam/data/models/question_model.dart';
 import 'package:catalyst/features/exam/presentation/widgets/add_question_sheet.dart';
 import 'package:catalyst/features/exam/presentation/widgets/add_question_dialog.dart';
+import 'package:catalyst/features/exam/presentation/widgets/generate_ai_questions_sheet.dart';
+import 'package:catalyst/features/exam/presentation/cubits/create_exam_cubit/create_exam_cubit.dart';
 
 class AddQuestionSection extends StatelessWidget {
-  const AddQuestionSection({super.key, required this.onQuestionAdded});
+  const AddQuestionSection({
+    super.key,
+    required this.onQuestionAdded,
+    required this.examId,
+  });
 
   final ValueChanged<Question> onQuestionAdded;
+  final String examId;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +34,7 @@ class AddQuestionSection extends StatelessWidget {
 
         if (action == null) return;
 
-        // 2) لو اختار Add Manually، نفتح الـ Dialog
+        // 2) handle actions
         if (action == 'manual') {
           final Question? newQuestion = await showDialog<Question>(
             context: context,
@@ -40,6 +48,27 @@ class AddQuestionSection extends StatelessWidget {
           if (newQuestion != null) {
             onQuestionAdded(newQuestion);
           }
+        } else if (action == 'ai') {
+          final cubit = context.read<CreateExamCubit>();
+          await showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+            ),
+            builder: (ctx) => BlocProvider.value(
+              value: cubit,
+              child: GenerateAIQuestionsSheet(
+                examId: examId,
+                onQuestionsGenerated: (questions) {
+                  for (final q in questions) {
+                    onQuestionAdded(q);
+                  }
+                },
+              ),
+            ),
+          );
         }
 
         // TODO: file / myBank / globalBank هتتعامل معاهم بعدين

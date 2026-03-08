@@ -39,6 +39,11 @@ class AddQuestionSheet extends StatelessWidget {
             label: "Choose from Global Question Bank",
             onTap: () => Navigator.pop(context, 'globalBank'),
           ),
+          _optionItem(
+            icon: Icons.auto_awesome,
+            label: "Generate Questions with AI",
+            onTap: () => Navigator.pop(context, 'ai'),
+          ),
         ],
       ),
     );

@@ -36,3 +36,10 @@ class CreateExamFinalSuccess extends CreateExamState {
   final String message;
   CreateExamFinalSuccess(this.message);
 }
+
+class GenerateAIQuestionsLoading extends CreateExamState {}
+
+class GenerateAIQuestionsSuccess extends CreateExamState {
+  final List<Question> questions;
+  GenerateAIQuestionsSuccess(this.questions);
+}

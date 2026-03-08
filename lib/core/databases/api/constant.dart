@@ -21,6 +21,7 @@ class EndPoint {
   static final String studentExamAnswers = dotenv.env['STUDENT_EXAM_ANSWERS']!;
   static final String verifyStudentExam = dotenv.env['VERIFY_STUDENT_EXAM']!;
   static final String completeExam = dotenv.env['COMPLETE_EXAM']!;
+  static const String generateAIQuestions = '/api/exam-generator/generate';
 }
 
 // ===== postman api key used in the request =====

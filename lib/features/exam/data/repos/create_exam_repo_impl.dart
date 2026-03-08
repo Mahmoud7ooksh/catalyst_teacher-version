@@ -1,6 +1,7 @@
 import 'package:catalyst/core/errors/cache_failure.dart';
 import 'package:catalyst/core/errors/exceptions.dart';
 import 'package:catalyst/features/exam/data/data_source/local_data_source/create_exam_local_data_source.dart';
+import 'package:catalyst/features/exam/data/data_source/remote_data_source/exam_remote_data_source.dart';
 import 'package:catalyst/features/exam/data/models/exam_info_model.dart';
 import 'package:catalyst/features/exam/data/models/question_model.dart';
 import 'package:catalyst/features/exam/domain/repo/create_exam_repo.dart';
@@ -12,9 +13,14 @@ import 'package:dio/dio.dart';
 
 class CreateExamRepoImpl implements CreateExamRepo {
   final CreateExamLocalDataSource _createExamLocalDataSource;
+  final ExamRemoteDataSource _examRemoteDataSource;
   final DioService dioService;
 
-  CreateExamRepoImpl(this._createExamLocalDataSource, this.dioService);
+  CreateExamRepoImpl(
+    this._createExamLocalDataSource,
+    this._examRemoteDataSource,
+    this.dioService,
+  );
 
   // ===================== Add Question =====================
   @override
@@ -126,6 +132,26 @@ class CreateExamRepoImpl implements CreateExamRepo {
         data: examData,
       );
       return Right(response['message'] ?? 'Exam created successfully');
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioError(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  // ===================== Generate Questions with AI =====================
+  @override
+  Future<Either<Failure, List<Question>>> generateQuestionsWithAI({
+    required String examId,
+    required String userMessage,
+  }) async {
+    try {
+      final questions = await _examRemoteDataSource.generateQuestionsWithAI(
+        examId: examId,
+        userMessage: userMessage,
+      );
+      return Right(questions);
     } catch (e) {
       if (e is DioException) {
         return Left(ServerFailure.fromDioError(e));

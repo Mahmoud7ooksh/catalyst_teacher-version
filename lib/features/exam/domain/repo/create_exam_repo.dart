@@ -21,4 +21,9 @@ abstract class CreateExamRepo {
     String lessonId,
     Map<String, dynamic> examData,
   );
+
+  Future<Either<Failure, List<Question>>> generateQuestionsWithAI({
+    required String examId,
+    required String userMessage,
+  });
 }

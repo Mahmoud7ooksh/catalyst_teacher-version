@@ -1,6 +1,7 @@
 // lib/core/utils/service_locator.dart
 
 import 'package:catalyst/core/databases/api/dio_service.dart';
+import 'package:catalyst/features/exam/data/data_source/remote_data_source/exam_remote_data_source.dart';
 import 'package:catalyst/features/my%20classes/data/data_source/remote_data_source.dart';
 import 'package:catalyst/features/my%20classes/data/data_sources/exam_details_remote_data_source.dart';
 import 'package:catalyst/features/my%20classes/data/data_sources/student_review_remote_data_source.dart';
@@ -79,10 +80,15 @@ void setupServiceLocator() {
     () => CreateExamLocalDataSourceImpl(),
   );
 
+  getIt.registerLazySingleton<ExamRemoteDataSource>(
+    () => ExamRemoteDataSourceImpl(getIt<DioService>()),
+  );
+
   // Repo (اللي الكيوبيد بيستخدمه)
   getIt.registerLazySingleton<CreateExamRepoImpl>(
     () => CreateExamRepoImpl(
       getIt.get<CreateExamLocalDataSource>(),
+      getIt.get<ExamRemoteDataSource>(),
       getIt.get<DioService>(),
     ),
   );
